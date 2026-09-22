@@ -167,3 +167,71 @@ def test_network_error_is_wrapped():
         assert "接続に失敗" in str(exc)
     else:
         raise AssertionError("XApiError was not raised")
+
+
+
+def test_search_recent_posts_accepts_event_day_window():
+    session = FakeSession(
+        [
+            FakeResponse(200, {"data": []}),
+        ]
+    )
+    client = XApiClient("secret", session=session)
+
+    client.search_recent_posts(
+        "from:SDE_STARDUSTBIN ICEx 完売",
+        username="SDE_STARDUSTBIN",
+        start_time="2026-09-18T15:00:00Z",
+        end_time="2026-09-19T06:00:00Z",
+    )
+
+    _, kwargs = session.calls[0]
+    assert kwargs["params"]["start_time"] == (
+        "2026-09-18T15:00:00Z"
+    )
+    assert kwargs["params"]["end_time"] == (
+        "2026-09-19T06:00:00Z"
+    )
+    assert "since_id" not in kwargs["params"]
+
+
+def test_search_recent_posts_accepts_since_id_increment():
+    session = FakeSession(
+        [
+            FakeResponse(200, {"data": []}),
+        ]
+    )
+    client = XApiClient("secret", session=session)
+
+    client.search_recent_posts(
+        "from:SDE_STARDUSTBIN ICEx 完売",
+        username="SDE_STARDUSTBIN",
+        since_id="123456789",
+        end_time="2026-09-19T09:00:00Z",
+    )
+
+    _, kwargs = session.calls[0]
+    assert kwargs["params"]["since_id"] == "123456789"
+    assert kwargs["params"]["end_time"] == (
+        "2026-09-19T09:00:00Z"
+    )
+    assert "start_time" not in kwargs["params"]
+
+
+def test_search_recent_posts_rejects_start_time_with_since_id():
+    session = FakeSession([])
+    client = XApiClient("secret", session=session)
+
+    try:
+        client.search_recent_posts(
+            "from:SDE_STARDUSTBIN ICEx 完売",
+            username="SDE_STARDUSTBIN",
+            start_time="2026-09-18T15:00:00Z",
+            since_id="123456789",
+        )
+    except ValueError as exc:
+        assert "同時に指定できません" in str(exc)
+    else:
+        raise AssertionError("ValueError was not raised")
+
+    assert session.calls == []
