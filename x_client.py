@@ -47,28 +47,50 @@ class XApiClient:
         *,
         username: str,
         max_results: int = 10,
+        start_time: str | None = None,
+        end_time: str | None = None,
+        since_id: str | None = None,
     ) -> list[XPost]:
         """
         Search recent X posts with a server-side query.
 
-        X recent search accepts 10-100 results per request. The API returns
-        only posts matching the query, so unrelated timeline posts are not
-        fetched by this method.
+        Initial event-day reads use start_time + end_time.
+        Incremental reads use since_id + end_time because X Recent Search
+        does not allow start_time and since_id together.
         """
         normalized_query = str(query or "").strip()
         if not normalized_query:
             raise ValueError("X検索クエリが空です。")
 
+        normalized_start = str(start_time or "").strip() or None
+        normalized_end = str(end_time or "").strip() or None
+        normalized_since = str(since_id or "").strip() or None
+
+        if normalized_start and normalized_since:
+            raise ValueError(
+                "start_time と since_id は同時に指定できません。"
+            )
+        if normalized_since and not normalized_since.isdigit():
+            raise ValueError("since_id は数値のPost IDで指定してください。")
+
         username = self._normalize_username(username)
         count = max(10, min(int(max_results), 100))
 
+        params: dict[str, Any] = {
+            "query": normalized_query,
+            "max_results": count,
+            "tweet.fields": "created_at",
+        }
+        if normalized_start:
+            params["start_time"] = normalized_start
+        if normalized_end:
+            params["end_time"] = normalized_end
+        if normalized_since:
+            params["since_id"] = normalized_since
+
         payload = self._get(
             "/tweets/search/recent",
-            params={
-                "query": normalized_query,
-                "max_results": count,
-                "tweet.fields": "created_at",
-            },
+            params=params,
         )
 
         posts: list[XPost] = []
@@ -110,7 +132,7 @@ class XApiClient:
                 url,
                 headers={
                     "Authorization": f"Bearer {self.bearer_token}",
-                    "User-Agent": "goods-stock-checker/phase10.1",
+                    "User-Agent": "goods-stock-checker/phase10.2",
                 },
                 params=params,
                 timeout=self.timeout,
