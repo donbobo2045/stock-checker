@@ -1,0 +1,85 @@
+alias,item_id,notes
+ペンライト,icex_penlight_ver4,公式投稿で使用実績あり
+ペンラ,icex_penlight_ver4,略称
+アクリルスタンド,freshest_acrylic_stand,公式投稿で使用実績あり
+アクスタ,freshest_acrylic_stand,略称
+トレカケース,freshest_card_case,公式投稿で使用実績あり
+うちわ,freshest_uchiwa,公式投稿で使用実績あり
+Tシャツ,freshest_tshirt,公式投稿で使用実績あり
+フェイスタオル,freshest_face_towel,商品名短縮
+メッシュトート,freshest_mesh_tote,商品名短縮
+シール帳,freshest_sticker_book,商品名短縮
+ステッカーシート,freshest_sticker_sheet,商品名短縮
+ランダムうちわアクキー,freshest_random_uchiwa_keychain,商品名短縮
+うちわアクキー,freshest_random_uchiwa_keychain,略称
+ランダムトレカ,freshest_random_trading_card,商品名短縮
+トレカ,freshest_random_trading_card,略称
+生写真セット,photo_set_vol30,vol番号なしでは曖昧になるよう意図的に複数登録
+生写真セット,photo_set_vol31,vol番号なしでは曖昧になるよう意図的に複数登録
+生写真,photo_set_vol30,vol番号なしでは曖昧になるよう意図的に複数登録
+生写真,photo_set_vol31,vol番号なしでは曖昧になるよう意図的に複数登録
+PHOTO SET,photo_set_vol30,vol番号なしでは曖昧になるよう意図的に複数登録
+PHOTO SET,photo_set_vol31,vol番号なしでは曖昧になるよう意図的に複数登録
+生写真セット vol.30,photo_set_vol30,vol指定あり
+生写真セット vol30,photo_set_vol30,vol指定あり表記揺れ
+生写真 vol.30,photo_set_vol30,vol指定あり
+生写真 vol30,photo_set_vol30,vol指定あり表記揺れ
+PHOTO SET vol.30,photo_set_vol30,公式商品名
+PHOTO SET vol30,photo_set_vol30,vol指定あり表記揺れ
+生写真セット vol.31,photo_set_vol31,vol指定あり
+生写真セット vol31,photo_set_vol31,vol指定あり表記揺れ
+生写真 vol.31,photo_set_vol31,vol指定あり
+生写真 vol31,photo_set_vol31,vol指定あり表記揺れ
+PHOTO SET vol.31,photo_set_vol31,公式商品名
+PHOTO SET vol31,photo_set_vol31,vol指定あり表記揺れ
+生写真セット,photo_set_vol32,vol番号なしでは曖昧になるよう意図的に複数登録
+生写真セット,photo_set_vol33,vol番号なしでは曖昧になるよう意図的に複数登録
+生写真,photo_set_vol32,vol番号なしでは曖昧になるよう意図的に複数登録
+生写真,photo_set_vol33,vol番号なしでは曖昧になるよう意図的に複数登録
+PHOTO SET,photo_set_vol32,vol番号なしでは曖昧になるよう意図的に複数登録
+PHOTO SET,photo_set_vol33,vol番号なしでは曖昧になるよう意図的に複数登録
+生写真セット vol.32,photo_set_vol32,vol指定あり
+生写真セット vol32,photo_set_vol32,vol指定あり表記揺れ
+生写真 vol.32,photo_set_vol32,vol指定あり
+生写真 vol32,photo_set_vol32,vol指定あり表記揺れ
+PHOTO SET vol.32,photo_set_vol32,公式商品名
+PHOTO SET vol32,photo_set_vol32,vol指定あり表記揺れ
+生写真セット vol.33,photo_set_vol33,vol指定あり
+生写真セット vol33,photo_set_vol33,vol指定あり表記揺れ
+生写真 vol.33,photo_set_vol33,vol指定あり
+生写真 vol33,photo_set_vol33,vol指定あり表記揺れ
+PHOTO SET vol.33,photo_set_vol33,公式商品名
+PHOTO SET vol33,photo_set_vol33,vol指定あり表記揺れ
+FRESHest!! ポーチ,freshest_pouch,公式商品名
+FRESHest ポーチ,freshest_pouch,表記揺れ
+ポーチ,freshest_pouch,単独表記ではBOKUNCHIと曖昧になるよう複数登録
+BOKUNCHI Mini Pouch,icex_bokunchi_mini_pouch,東京ページ表記
+ICEx BOKUNCHI Mini Pouch,icex_bokunchi_mini_pouch,愛知福岡・大阪ページ表記
+BOKUNCHI ポーチ,icex_bokunchi_mini_pouch,略称
+ポーチ,icex_bokunchi_mini_pouch,単独表記ではFRESHestと曖昧になるよう複数登録
+Fight!! タオル,icex_fight_towel,商品名短縮
+Fightタオル,icex_fight_towel,略称
+ファイトタオル,icex_fight_towel,略称
+タオル,icex_fight_towel,フェイスタオルと曖昧になるよう複数登録
+タオル,freshest_face_towel,Fightタオルと曖昧になるよう複数登録
+ランダムアクリルキーホルダー,random_acrylic_keyholder,公式商品名
+ランダムアクリルキーホルダー(全8種),random_acrylic_keyholder,東京ページ表記
+ランダムアクキー,random_acrylic_keyholder,うちわアクキーと曖昧になるよう複数登録
+ランダムアクキー,freshest_random_uchiwa_keychain,通常アクキーと曖昧になるよう複数登録
+アクキー,random_acrylic_keyholder,うちわアクキーと曖昧になるよう複数登録
+アクキー,freshest_random_uchiwa_keychain,通常アクキーと曖昧になるよう複数登録
+ROUTE-8 Drawstring Bag,icex_route8_drawstring_bag,東京ページ表記
+ICEx ROUTE-8 Drawstring Bag,icex_route8_drawstring_bag,愛知福岡・大阪ページ表記
+ROUTE-8 バッグ,icex_route8_drawstring_bag,略称
+すたぴぃのしーる,sutapii_sticker,公式商品名
+すたぴぃシール,sutapii_sticker,表記揺れ
+シール,freshest_sticker_sheet,曖昧語：ステッカーシートの可能性
+シール,sutapii_sticker,曖昧語：すたぴぃのしーるの可能性
+ステッカー,freshest_sticker_sheet,曖昧語：ステッカーシートの可能性
+ステッカー,sutapii_sticker,曖昧語：すたぴぃのしーるの可能性
+バッグ,freshest_mesh_tote,曖昧語：メッシュトートの可能性
+バッグ,icex_route8_drawstring_bag,曖昧語：ROUTE-8 Drawstring Bagの可能性
+キーホルダー,freshest_random_uchiwa_keychain,曖昧語：うちわアクキーの可能性
+キーホルダー,random_acrylic_keyholder,曖昧語：ランダムアクリルキーホルダーの可能性
+アクリルキーホルダー,freshest_random_uchiwa_keychain,曖昧語：うちわアクキーの可能性
+アクリルキーホルダー,random_acrylic_keyholder,曖昧語：ランダムアクリルキーホルダーの可能性

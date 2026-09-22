@@ -1,0 +1,8 @@
+sales_session_id,tour_id,date,sales_start_time,timezone,source_url,note
+FRESHEST_AICHI_0821,FRESHEST_2026,2026-08-21,14:30,Asia/Tokyo,https://icex.jp/contents/1101789,先行販売14:30～17:00。開場中・終演後30分程度も販売予定。
+FRESHEST_AICHI_0822,FRESHEST_2026,2026-08-22,10:00,Asia/Tokyo,https://icex.jp/contents/1101789,共通先行販売10:00～12:00。各部開場中・2部終演後30分程度も販売予定。1部終演後販売なし。
+FRESHEST_FUKUOKA_0829,FRESHEST_2026,2026-08-29,13:00,Asia/Tokyo,https://icex.jp/contents/1101789,先行販売13:00～16:30。開場中・終演後30分程度も販売予定。
+FRESHEST_FUKUOKA_0830,FRESHEST_2026,2026-08-30,10:00,Asia/Tokyo,https://icex.jp/contents/1101789,共通先行販売10:00～12:00。各部開場中・2部終演後30分程度も販売予定。1部終演後販売なし。
+FRESHEST_OSAKA_0918,FRESHEST_2026,2026-09-18,15:00,Asia/Tokyo,https://icex.jp/contents/1110020,先行販売15:00～17:00。開場中・終演後30分程度も販売予定。
+FRESHEST_OSAKA_0919,FRESHEST_2026,2026-09-19,10:00,Asia/Tokyo,https://icex.jp/contents/1110020,共通先行販売10:00～12:00。各部開場中・2部終演後30分程度も販売予定。1部終演後販売なし。
+FRESHEST_TOKYO_0923,FRESHEST_2026,2026-09-23,13:00,Asia/Tokyo,https://icex.jp/contents/1110593,先行販売13:00～16:00。開場中・終演後30分程度も販売予定。
