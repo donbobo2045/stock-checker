@@ -618,10 +618,16 @@ with st.expander(
             )
         else:
             st.write("**取得方式：** since_idによる増分取得")
-            st.caption(
-                f"since_id={x_plan.since_id} / "
-                f"end_time={x_plan.end_time}"
-            )
+            if x_mode == "リハーサル（過去イベント日）":
+                st.caption(
+                    f"since_id={x_plan.since_id} / "
+                    "API上限は現在時刻・画面では仮想終了時刻までに絞り込み"
+                )
+            else:
+                st.caption(
+                    f"since_id={x_plan.since_id} / "
+                    "現在時刻まで"
+                )
 
     cursor_col1, cursor_col2 = st.columns(2)
     with cursor_col1:
@@ -671,6 +677,30 @@ with st.expander(
                     end_time=x_plan.end_time,
                     since_id=x_plan.since_id,
                 )
+
+                # Incremental rehearsal uses since_id without end_time.
+                # Keep the API request production-like, then trim any posts
+                # later than the virtual rehearsal cutoff locally.
+                if (
+                    x_plan.mode == "incremental"
+                    and x_mode == "リハーサル（過去イベント日）"
+                ):
+                    cutoff_utc = x_cutoff.astimezone(
+                        ZoneInfo("UTC")
+                    )
+                    filtered_posts = []
+                    for post in x_posts:
+                        if not post.created_at:
+                            continue
+                        created_at = datetime.fromisoformat(
+                            post.created_at.replace(
+                                "Z",
+                                "+00:00",
+                            )
+                        )
+                        if created_at <= cutoff_utc:
+                            filtered_posts.append(post)
+                    x_posts = filtered_posts
 
                 preview_results = []
                 for post in x_posts:
