@@ -115,3 +115,105 @@ def test_x_sync_cursor_rejects_non_numeric_id(
         assert "numeric X Post ID" in str(exc)
     else:
         raise AssertionError("ValueError was not raised")
+
+
+
+def test_apply_x_parsed_posts_and_advance_cursor_is_atomic(
+    tmp_path,
+    monkeypatch,
+):
+    db_path = tmp_path / "inventory.db"
+
+    monkeypatch.setattr(
+        database,
+        "DB_PATH",
+        db_path,
+    )
+    database.init_db()
+
+    scope = "rehearsal:FRESHEST_2026:2026-09-19"
+
+    database.apply_x_parsed_posts_and_advance_cursor(
+        scope,
+        [
+            (
+                "SESSION_1",
+                [
+                    ("item_a", ""),
+                    ("item_b", "筒井俊旭"),
+                ],
+                "2100000000000000001",
+                "https://x.com/SDE_STARDUSTBIN/status/2100000000000000001",
+            ),
+            (
+                "SESSION_1",
+                [
+                    ("item_c", ""),
+                ],
+                "2100000000000000002",
+                "https://x.com/SDE_STARDUSTBIN/status/2100000000000000002",
+            ),
+        ],
+        "2100000000000000002",
+    )
+
+    inv = database.get_inventory_for_session(
+        "SESSION_1"
+    )
+
+    assert inv[("item_a", "")]["status"] == "SOLD_OUT"
+    assert (
+        inv[("item_b", "筒井俊旭")]["status"]
+        == "SOLD_OUT"
+    )
+    assert inv[("item_c", "")]["status"] == "SOLD_OUT"
+    assert (
+        inv[("item_a", "")]["source_post_id"]
+        == "2100000000000000001"
+    )
+    assert (
+        inv[("item_c", "")]["source_post_id"]
+        == "2100000000000000002"
+    )
+    assert (
+        database.get_x_sync_cursor(scope)
+        == "2100000000000000002"
+    )
+
+
+def test_apply_x_parsed_posts_rejects_invalid_cursor_before_write(
+    tmp_path,
+    monkeypatch,
+):
+    db_path = tmp_path / "inventory.db"
+
+    monkeypatch.setattr(
+        database,
+        "DB_PATH",
+        db_path,
+    )
+    database.init_db()
+
+    try:
+        database.apply_x_parsed_posts_and_advance_cursor(
+            "scope",
+            [
+                (
+                    "SESSION_1",
+                    [("item_a", "")],
+                    "2100000000000000001",
+                    "https://x.com/example/status/2100000000000000001",
+                )
+            ],
+            "invalid",
+        )
+    except ValueError as exc:
+        assert "numeric X Post ID" in str(exc)
+    else:
+        raise AssertionError("ValueError was not raised")
+
+    inv = database.get_inventory_for_session(
+        "SESSION_1"
+    )
+    assert inv == {}
+    assert database.get_x_sync_cursor("scope") is None
