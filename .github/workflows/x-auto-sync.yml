@@ -1,0 +1,71 @@
+name: X Auto Sync
+
+on:
+  workflow_dispatch:
+    inputs:
+      rehearsal_date:
+        description: "Dry-run event date (JST)"
+        required: false
+        default: "2026-09-19"
+        type: string
+      rehearsal_cutoff:
+        description: "Dry-run cutoff time (JST)"
+        required: false
+        default: "18:00"
+        type: string
+      dry_run:
+        description: "Do not change production_state.json"
+        required: true
+        default: true
+        type: boolean
+  schedule:
+    - cron: "2-57/5 12-23 23 9 *"
+      timezone: "Asia/Tokyo"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: x-auto-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Fetch and apply X sold-out posts
+        env:
+          X_BEARER_TOKEN: ${{ secrets.X_BEARER_TOKEN }}
+          X_TARGET_TOUR_ID: FRESHEST_2026
+          X_REHEARSAL_DATE: ${{ inputs.rehearsal_date }}
+          X_REHEARSAL_CUTOFF: ${{ inputs.rehearsal_cutoff }}
+          X_DRY_RUN: ${{ inputs.dry_run }}
+        run: python scripts/x_auto_sync.py
+
+      - name: Commit production inventory when changed
+        shell: bash
+        run: |
+          if git diff --quiet -- data/production_state.json; then
+            echo "No production state change."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/production_state.json
+          git commit -m "Update live inventory from X"
+          git pull --rebase
+          git push
