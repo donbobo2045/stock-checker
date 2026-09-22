@@ -67,7 +67,7 @@ def test_incremental_plan_uses_since_id_instead_of_start_time():
 
     assert plan.mode == "incremental"
     assert plan.start_time is None
-    assert plan.end_time == "2026-09-19T09:00:00Z"
+    assert plan.end_time is None
     assert plan.since_id == "123456789"
 
 
