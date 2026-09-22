@@ -79,7 +79,7 @@ class XApiClient:
         params: dict[str, Any] = {
             "query": normalized_query,
             "max_results": count,
-            "tweet.fields": "created_at",
+            "post.fields": "created_at",
         }
         if normalized_start:
             params["start_time"] = normalized_start
