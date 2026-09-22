@@ -57,3 +57,61 @@ def test_unknown_is_migrated_to_auto(
         "TEST"
     )
     assert inv[("item", "")]["status"] == "AUTO"
+
+
+
+def test_x_sync_cursor_round_trip(
+    tmp_path,
+    monkeypatch,
+):
+    db_path = tmp_path / "inventory.db"
+
+    monkeypatch.setattr(
+        database,
+        "DB_PATH",
+        db_path,
+    )
+    database.init_db()
+
+    scope = "rehearsal:FRESHEST_2026:2026-09-19"
+
+    assert database.get_x_sync_cursor(scope) is None
+
+    database.set_x_sync_cursor(
+        scope,
+        "123456789",
+    )
+    assert database.get_x_sync_cursor(scope) == "123456789"
+
+    database.set_x_sync_cursor(
+        scope,
+        "987654321",
+    )
+    assert database.get_x_sync_cursor(scope) == "987654321"
+
+    database.reset_x_sync_cursor(scope)
+    assert database.get_x_sync_cursor(scope) is None
+
+
+def test_x_sync_cursor_rejects_non_numeric_id(
+    tmp_path,
+    monkeypatch,
+):
+    db_path = tmp_path / "inventory.db"
+
+    monkeypatch.setattr(
+        database,
+        "DB_PATH",
+        db_path,
+    )
+    database.init_db()
+
+    try:
+        database.set_x_sync_cursor(
+            "scope",
+            "not-a-post-id",
+        )
+    except ValueError as exc:
+        assert "numeric X Post ID" in str(exc)
+    else:
+        raise AssertionError("ValueError was not raised")
