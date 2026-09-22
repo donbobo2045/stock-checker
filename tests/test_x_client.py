@@ -235,3 +235,44 @@ def test_search_recent_posts_rejects_start_time_with_since_id():
         raise AssertionError("ValueError was not raised")
 
     assert session.calls == []
+
+
+
+def test_invalid_request_error_shows_parameter_details():
+    session = FakeSession(
+        [
+            FakeResponse(
+                400,
+                {
+                    "detail": (
+                        "One or more parameters to your request "
+                        "was invalid."
+                    ),
+                    "errors": [
+                        {
+                            "parameters": {
+                                "end_time": [
+                                    "2026-09-19T09:00:00Z"
+                                ]
+                            },
+                            "message": "Example parameter error",
+                        }
+                    ],
+                },
+            )
+        ]
+    )
+    client = XApiClient("secret", session=session)
+
+    try:
+        client.search_recent_posts(
+            "from:SDE_STARDUSTBIN ICEx 完売",
+            username="SDE_STARDUSTBIN",
+            since_id="123456789",
+        )
+    except XApiError as exc:
+        message = str(exc)
+        assert "Example parameter error" in message
+        assert "end_time" in message
+    else:
+        raise AssertionError("XApiError was not raised")
