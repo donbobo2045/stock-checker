@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, time
 import os
 from pathlib import Path
 import sys
@@ -44,10 +44,49 @@ X_SEARCH_QUERY = (
 )
 
 
-def main() -> int:
-    now = datetime.now(
-        ZoneInfo("Asia/Tokyo")
+def _get_effective_now() -> datetime:
+    timezone = ZoneInfo("Asia/Tokyo")
+    rehearsal_date = os.getenv(
+        "X_REHEARSAL_DATE",
+        "",
+    ).strip()
+
+    if not rehearsal_date:
+        return datetime.now(timezone)
+
+    rehearsal_cutoff = os.getenv(
+        "X_REHEARSAL_CUTOFF",
+        "18:00",
+    ).strip() or "18:00"
+
+    event_day = datetime.fromisoformat(
+        rehearsal_date
+    ).date()
+    cutoff_time = time.fromisoformat(
+        rehearsal_cutoff
     )
+    return datetime.combine(
+        event_day,
+        cutoff_time,
+        tzinfo=timezone,
+    )
+
+
+def _is_dry_run() -> bool:
+    return os.getenv(
+        "X_DRY_RUN",
+        "",
+    ).strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
+
+
+def main() -> int:
+    now = _get_effective_now()
+    dry_run = _is_dry_run()
 
     events = pd.read_csv(
         EVENTS_CSV,
@@ -115,7 +154,11 @@ def main() -> int:
         f"changed={summary.changed}",
     )
 
-    if summary.changed:
+    if dry_run:
+        print(
+            "DRY_RUN: production_state.json was not changed"
+        )
+    elif summary.changed:
         save_production_state(
             PRODUCTION_STATE_PATH,
             next_state,
