@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+import os
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -24,6 +25,8 @@ from database import (
 from parser import SoldOutPostParser
 from search_logic import filter_goods_for_search
 from selection_logic import get_default_event_id, get_tour_id_for_event
+from x_client import XApiClient, XApiError
+from x_preview import IGNORED, PARSED, REVIEW, classify_parse_result
 from status_logic import (
     AUTO,
     AVAILABLE,
@@ -43,6 +46,8 @@ EVENTS_CSV = DATA_DIR / "events.csv"
 ALIASES_CSV = DATA_DIR / "item_aliases.csv"
 SALES_SESSIONS_CSV = DATA_DIR / "sales_sessions.csv"
 SALES_SESSION_ITEMS_CSV = DATA_DIR / "sales_session_items.csv"
+
+X_USERNAME = "SDE_STARDUSTBIN"
 
 EFFECTIVE_LABELS = {
     PRE_SALE: "🟡 販売前",
@@ -198,6 +203,20 @@ def get_current_time(
         return test_now.replace(tzinfo=timezone)
 
     return test_now.astimezone(timezone)
+
+
+def get_x_bearer_token() -> str:
+    """Return X API Bearer Token without exposing it in the UI."""
+    env_value = os.getenv("X_BEARER_TOKEN", "").strip()
+    if env_value:
+        return env_value
+
+    try:
+        value = st.secrets.get("X_BEARER_TOKEN", "")
+    except (FileNotFoundError, KeyError):
+        return ""
+
+    return str(value or "").strip()
 
 
 init_db()
@@ -430,13 +449,139 @@ with st.sidebar:
         st.rerun()
 
 
+# ---- X API preview (Phase 10.1) ----
+with st.expander(
+    "📡 X API取得テスト（Phase 10.1・自動反映なし）",
+    expanded=False,
+):
+    st.caption(
+        "@SDE_STARDUSTBIN の最新ポストをX APIから取得し、"
+        "既存parserで解析します。"
+        "この画面から在庫DBへの自動反映は行いません。"
+    )
+
+    x_bearer_token = get_x_bearer_token()
+    x_max_results = st.number_input(
+        "取得する最新ポスト数",
+        min_value=5,
+        max_value=50,
+        value=10,
+        step=5,
+        key="x_api_max_results",
+    )
+
+    if not x_bearer_token:
+        st.info(
+            "X_BEARER_TOKEN が未設定です。"
+            "ローカルでは .streamlit/secrets.toml、"
+            "Streamlit Community CloudではApp settingsのSecretsに設定してください。"
+        )
+
+    if st.button(
+        "スタダ便の最新ポストを取得・解析",
+        type="primary",
+        disabled=not bool(x_bearer_token),
+        key="fetch_x_api_posts",
+    ):
+        try:
+            with st.spinner("X APIから最新ポストを取得しています..."):
+                x_client = XApiClient(x_bearer_token)
+                x_posts = x_client.get_recent_posts(
+                    X_USERNAME,
+                    max_results=int(x_max_results),
+                )
+
+                preview_results = []
+                for post in x_posts:
+                    parsed_result = parser.parse(post.text)
+                    preview_results.append(
+                        {
+                            "post": post,
+                            "parsed_result": parsed_result,
+                            "category": classify_parse_result(parsed_result),
+                        }
+                    )
+
+                st.session_state["x_preview_results"] = preview_results
+        except (XApiError, ValueError) as exc:
+            st.session_state.pop("x_preview_results", None)
+            st.error(f"X API取得に失敗しました：{exc}")
+
+    x_preview_results = st.session_state.get(
+        "x_preview_results",
+        [],
+    )
+
+    if x_preview_results:
+        parsed_count = sum(
+            1 for row in x_preview_results
+            if row["category"] == PARSED
+        )
+        review_count = sum(
+            1 for row in x_preview_results
+            if row["category"] == REVIEW
+        )
+        ignored_count = sum(
+            1 for row in x_preview_results
+            if row["category"] == IGNORED
+        )
+
+        st.markdown(
+            f"✅ **解析成功 {parsed_count}**　"
+            f"⚠️ **要確認 {review_count}**　"
+            f"－ **対象外 {ignored_count}**"
+        )
+
+        for row in x_preview_results:
+            post = row["post"]
+            parsed_result = row["parsed_result"]
+            category = row["category"]
+
+            label = {
+                PARSED: "✅ 解析成功",
+                REVIEW: "⚠️ 要確認",
+                IGNORED: "－ 対象外",
+            }[category]
+
+            with st.container(border=True):
+                st.markdown(f"**{label}**　Post ID: {post.id}")
+                if post.created_at:
+                    st.caption(f"投稿時刻：{post.created_at}")
+                st.markdown(f"[Xで元ポストを開く]({post.url})")
+                st.code(post.text, language=None)
+
+                if category == PARSED:
+                    st.write(
+                        f"**対象物販セッション：** "
+                        f"{parsed_result.sales_session_id}  "
+                        f"（{parsed_result.date} / {parsed_result.venue}）"
+                    )
+                    st.dataframe(
+                        pd.DataFrame(
+                            [
+                                {
+                                    "item_id": item.item_id,
+                                    "商品名": item.item_name,
+                                    "variant": item.variant or "(なし)",
+                                    "判定": "SOLD_OUT候補",
+                                }
+                                for item in parsed_result.items
+                            ]
+                        ),
+                        use_container_width=True,
+                        hide_index=True,
+                    )
+                else:
+                    st.caption(f"判定理由：{parsed_result.reason}")
+
+
 # ---- Manual post parser / admin ----
 with st.expander("🛠 完売ポスト手動解析（テスト・管理）", expanded=False):
     post_text = st.text_area(
         "スタダ便の完売ポスト本文を貼り付け",
         height=260,
         placeholder=(
-            "完売商品と「本日分完売」を含む"
+            "完売商品と「完売情報」または「本日分完売」を含む"
             "ポスト本文をそのまま貼り付けてください"
         ),
     )
