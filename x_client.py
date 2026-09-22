@@ -204,17 +204,24 @@ class XApiClient:
         if not isinstance(payload, dict):
             return ""
 
-        detail = payload.get("detail")
-        if detail:
-            return str(detail)
-
         errors = payload.get("errors")
         if isinstance(errors, list) and errors:
             first = errors[0]
             if isinstance(first, dict):
-                for key in ("detail", "title"):
-                    if first.get(key):
-                        return str(first[key])
+                message = (
+                    first.get("message")
+                    or first.get("detail")
+                    or first.get("title")
+                )
+                parameters = first.get("parameters")
+                if message and parameters:
+                    return f"{message} parameters={parameters}"
+                if message:
+                    return str(message)
+
+        detail = payload.get("detail")
+        if detail:
+            return str(detail)
 
         title = payload.get("title")
         return str(title) if title else ""
