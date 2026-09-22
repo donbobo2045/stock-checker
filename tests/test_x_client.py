@@ -64,7 +64,7 @@ def test_search_recent_posts_uses_server_side_query():
     assert kwargs["headers"]["Authorization"] == "Bearer secret"
     assert kwargs["params"]["query"] == query
     assert kwargs["params"]["max_results"] == 10
-    assert kwargs["params"]["tweet.fields"] == "created_at"
+    assert kwargs["params"]["post.fields"] == "created_at"
 
 
 def test_max_results_is_clamped_to_recent_search_range():
