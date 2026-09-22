@@ -3,7 +3,12 @@ from __future__ import annotations
 from datetime import datetime
 import os
 from pathlib import Path
+import sys
 from zoneinfo import ZoneInfo
+
+BASE_DIR = Path(__file__).resolve().parents[1]
+if str(BASE_DIR) not in sys.path:
+    sys.path.insert(0, str(BASE_DIR))
 
 import pandas as pd
 
@@ -16,7 +21,6 @@ from production_sync import sync_live_event_once
 from x_client import XApiClient
 
 
-BASE_DIR = Path(__file__).resolve().parents[1]
 DATA_DIR = BASE_DIR / "data"
 
 EVENTS_CSV = DATA_DIR / "events.csv"
