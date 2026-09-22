@@ -246,3 +246,102 @@ def reset_x_sync_cursor(scope_key: str) -> None:
             (scope_key,),
         )
         conn.commit()
+
+
+
+def apply_x_parsed_posts_and_advance_cursor(
+    scope_key: str,
+    parsed_posts: list[
+        tuple[
+            str,
+            list[tuple[str, str]],
+            str,
+            str,
+        ]
+    ],
+    last_post_id: str,
+) -> None:
+    """
+    Atomically apply parsed X SOLD_OUT updates and advance the X cursor.
+
+    Each parsed_posts row is:
+      (
+        sales_session_id,
+        [(item_id, variant), ...],
+        source_post_id,
+        source_post_url,
+      )
+
+    Inventory writes and cursor advancement happen in one transaction so a
+    failure cannot leave the cursor ahead of the inventory state.
+    """
+    normalized_cursor = str(last_post_id or "").strip()
+    if not normalized_cursor.isdigit():
+        raise ValueError("last_post_id must be a numeric X Post ID")
+
+    normalized_scope = str(scope_key or "").strip()
+    if not normalized_scope:
+        raise ValueError("scope_key must not be empty")
+
+    with get_connection() as conn:
+        for (
+            sales_session_id,
+            items,
+            source_post_id,
+            source_post_url,
+        ) in parsed_posts:
+            for item_id, variant in items:
+                conn.execute(
+                    """
+                    INSERT INTO inventory_status (
+                        sales_session_id,
+                        item_id,
+                        variant,
+                        status,
+                        updated_at,
+                        source_post_id,
+                        source_post_url
+                    )
+                    VALUES (
+                        ?, ?, ?, 'SOLD_OUT',
+                        CURRENT_TIMESTAMP, ?, ?
+                    )
+                    ON CONFLICT(
+                        sales_session_id,
+                        item_id,
+                        variant
+                    )
+                    DO UPDATE SET
+                        status = 'SOLD_OUT',
+                        updated_at = CURRENT_TIMESTAMP,
+                        source_post_id = excluded.source_post_id,
+                        source_post_url = excluded.source_post_url
+                    """,
+                    (
+                        sales_session_id,
+                        item_id,
+                        variant or "",
+                        source_post_id or None,
+                        source_post_url or None,
+                    ),
+                )
+
+        conn.execute(
+            """
+            INSERT INTO x_sync_state (
+                scope_key,
+                last_post_id,
+                updated_at
+            )
+            VALUES (?, ?, CURRENT_TIMESTAMP)
+            ON CONFLICT(scope_key)
+            DO UPDATE SET
+                last_post_id = excluded.last_post_id,
+                updated_at = CURRENT_TIMESTAMP
+            """,
+            (
+                normalized_scope,
+                normalized_cursor,
+            ),
+        )
+        conn.commit()
