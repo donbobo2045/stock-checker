@@ -48,6 +48,10 @@ SALES_SESSIONS_CSV = DATA_DIR / "sales_sessions.csv"
 SALES_SESSION_ITEMS_CSV = DATA_DIR / "sales_session_items.csv"
 
 X_USERNAME = "SDE_STARDUSTBIN"
+X_SEARCH_QUERY = (
+    "from:SDE_STARDUSTBIN "
+    "(ICEx OR #ICEx) 完売 -is:retweet"
+)
 
 EFFECTIVE_LABELS = {
     PRE_SALE: "🟡 販売前",
@@ -455,18 +459,21 @@ with st.expander(
     expanded=False,
 ):
     st.caption(
-        "@SDE_STARDUSTBIN の最新ポストをX APIから取得し、"
+        "@SDE_STARDUSTBIN のうち、本文にICExと完売を含む"
+        "直近7日間のポストだけをX API検索で取得し、"
         "既存parserで解析します。"
         "この画面から在庫DBへの自動反映は行いません。"
     )
 
     x_bearer_token = get_x_bearer_token()
+    st.caption(f"検索条件：`{X_SEARCH_QUERY}`")
+
     x_max_results = st.number_input(
-        "取得する最新ポスト数",
-        min_value=5,
-        max_value=50,
+        "1回の検索で取得する最大件数",
+        min_value=10,
+        max_value=100,
         value=10,
-        step=5,
+        step=10,
         key="x_api_max_results",
     )
 
@@ -478,16 +485,17 @@ with st.expander(
         )
 
     if st.button(
-        "スタダ便の最新ポストを取得・解析",
+        "条件に合うポストを取得・解析",
         type="primary",
         disabled=not bool(x_bearer_token),
         key="fetch_x_api_posts",
     ):
         try:
-            with st.spinner("X APIから最新ポストを取得しています..."):
+            with st.spinner("X APIで条件一致ポストを検索しています..."):
                 x_client = XApiClient(x_bearer_token)
-                x_posts = x_client.get_recent_posts(
-                    X_USERNAME,
+                x_posts = x_client.search_recent_posts(
+                    X_SEARCH_QUERY,
+                    username=X_USERNAME,
                     max_results=int(x_max_results),
                 )
 
