@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Any
-from urllib.parse import quote
 
 import requests
 
@@ -42,32 +41,31 @@ class XApiClient:
         self.timeout = timeout
         self.session = session or requests.Session()
 
-    def get_user_by_username(self, username: str) -> dict[str, Any]:
-        username = self._normalize_username(username)
-        payload = self._get(
-            f"/users/by/username/{quote(username, safe='')}",
-        )
-        data = payload.get("data")
-        if not isinstance(data, dict) or not data.get("id"):
-            raise XApiError(
-                f"@{username} のユーザーIDを取得できませんでした。"
-            )
-        return data
-
-    def get_recent_posts(
+    def search_recent_posts(
         self,
-        username: str,
+        query: str,
         *,
+        username: str,
         max_results: int = 10,
     ) -> list[XPost]:
-        username = self._normalize_username(username)
-        user = self.get_user_by_username(username)
-        user_id = str(user["id"])
+        """
+        Search recent X posts with a server-side query.
 
-        count = max(5, min(int(max_results), 100))
+        X recent search accepts 10-100 results per request. The API returns
+        only posts matching the query, so unrelated timeline posts are not
+        fetched by this method.
+        """
+        normalized_query = str(query or "").strip()
+        if not normalized_query:
+            raise ValueError("X検索クエリが空です。")
+
+        username = self._normalize_username(username)
+        count = max(10, min(int(max_results), 100))
+
         payload = self._get(
-            f"/users/{quote(user_id, safe='')}/tweets",
+            "/tweets/search/recent",
             params={
+                "query": normalized_query,
                 "max_results": count,
                 "tweet.fields": "created_at",
             },
@@ -128,6 +126,11 @@ class XApiClient:
                 message = (
                     "X APIの認証に失敗しました。"
                     "Bearer Tokenを確認してください。"
+                )
+            elif response.status_code == 402:
+                message = (
+                    "X APIのクレジット残高がありません。"
+                    "Developer ConsoleでCreditsを追加してください。"
                 )
             elif response.status_code == 403:
                 message = (
