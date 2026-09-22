@@ -73,8 +73,10 @@ ICEx ROUTE-8 Drawstring Bag,icex_route8_drawstring_bag,愛知福岡・大阪ペ�
 ROUTE-8 バッグ,icex_route8_drawstring_bag,略称
 すたぴぃのしーる,sutapii_sticker,公式商品名
 すたぴぃシール,sutapii_sticker,表記揺れ
-シール,sutapii_sticker,単独表記はすたぴぃのしーるとして扱う
-ステッカー,freshest_sticker_sheet,単独表記はステッカーシートとして扱う
+シール,freshest_sticker_sheet,曖昧語：ステッカーシートの可能性
+シール,sutapii_sticker,曖昧語：すたぴぃのしーるの可能性
+ステッカー,freshest_sticker_sheet,曖昧語：ステッカーシートの可能性
+ステッカー,sutapii_sticker,曖昧語：すたぴぃのしーるの可能性
 バッグ,freshest_mesh_tote,曖昧語：メッシュトートの可能性
 バッグ,icex_route8_drawstring_bag,曖昧語：ROUTE-8 Drawstring Bagの可能性
 キーホルダー,freshest_random_uchiwa_keychain,曖昧語：うちわアクキーの可能性

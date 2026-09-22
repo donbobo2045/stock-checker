@@ -76,24 +76,16 @@ def test_search_by_alias_penra():
     }
 
 
-def test_search_generic_seal_includes_sutapii_but_not_sticker_sheet():
+def test_ambiguous_search_term_shows_multiple_candidates():
     result = filter_goods_for_search(
         TOKYO_GOODS,
         ALIASES,
         "シール",
     )
-    item_ids = set(result["item_id"])
-    assert "sutapii_sticker" in item_ids
-    assert "freshest_sticker_sheet" not in item_ids
-
-
-def test_search_generic_sticker_maps_to_sticker_sheet():
-    result = filter_goods_for_search(
-        TOKYO_GOODS,
-        ALIASES,
-        "ステッカー",
-    )
-    assert set(result["item_id"]) == {"freshest_sticker_sheet"}
+    assert {
+        "freshest_sticker_sheet",
+        "sutapii_sticker",
+    }.issubset(set(result["item_id"]))
 
 
 def test_empty_search_returns_all_rows():

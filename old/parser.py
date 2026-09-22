@@ -69,11 +69,6 @@ def normalize_for_fuzzy(value: object) -> str:
 TOUR_FUZZY_THRESHOLD = 0.72
 TOUR_FUZZY_MARGIN = 0.08
 
-# Official posts do not always use the Japanese middle dot as the bullet.
-# Keep this limited to common bullet/list symbols so unrelated text is not
-# accidentally treated as an item line when no SOLD OUT heading is present.
-BULLET_PREFIX_RE = r"^[・●○■□◆◇★☆※▶▷▪▫◉◎\-–—]+\s*"
-
 
 class SoldOutPostParser:
     def __init__(
@@ -209,14 +204,11 @@ class SoldOutPostParser:
         if not tour_id:
             return ParseResult(False, "対象ツアーを特定できない")
 
-        # 「完売情報」見出しか「本日分完売」のどちらかがあれば、
-        # 完売投稿として扱う。公式投稿には片方しかないケースもある。
-        has_sold_out_heading = "完売情報" in normalized
-        has_daily_sold_out = "本日分完売" in normalized
-        if not (has_sold_out_heading or has_daily_sold_out):
+        # 完売投稿として扱うための必須表現。
+        if "本日分完売" not in normalized:
             return ParseResult(
                 False,
-                "完売情報または本日分完売の明示がないため対象外",
+                "本日分完売の明示がないため対象外",
                 tour_id=tour_id,
             )
 
@@ -233,59 +225,36 @@ class SoldOutPostParser:
 
         for line in lines:
             s = normalize_text(line)
-            content = re.sub(BULLET_PREFIX_RE, "", s).strip()
 
-            # Separate-line variant pattern, e.g.
-            # 種類：竹野世梛・八神遼介 / サイズ：M/L
-            m = re.match(r"^(種類|サイズ)\s*[:：]\s*(.+)$", content, flags=re.I)
+            # Separate-line variant pattern, e.g. 種類：竹野世梛 / サイズ：M
+            m = re.match(r"^(種類|サイズ)\s*[:：]\s*(.+)$", s, flags=re.I)
             if m and pending is not None:
                 item_id, official_name = pending
-                variants, variant_error = self._resolve_variant_values(m.group(2))
-                if variant_error:
-                    return self._failure(variant_error, tour_id, event)
-
+                variant = self.variant_aliases.get(normalize_variant(m.group(2)))
+                if not variant:
+                    return self._failure(
+                        f"variantを特定できない: {m.group(2)}", tour_id, event
+                    )
                 allowed = set(
                     self.goods.loc[self.goods["item_id"] == item_id, "variant"]
                 )
-                for variant in variants:
-                    if variant not in allowed:
-                        return self._failure(
-                            f"variantを特定できない: {m.group(2)}", tour_id, event
-                        )
-                    parsed.append(ParsedSoldOutItem(item_id, official_name, variant))
+                if variant not in allowed:
+                    return self._failure(
+                        f"variantを特定できない: {m.group(2)}", tour_id, event
+                    )
+                parsed.append(ParsedSoldOutItem(item_id, official_name, variant))
                 pending = None
                 continue
 
-            # A standalone variant line without a preceding variant-required item
-            # is not enough information to update inventory safely.
-            if m:
-                return self._failure(
-                    f"variantの対象商品を特定できない: {m.group(2)}",
-                    tour_id,
-                    event,
-                )
+            if not s.startswith("・"):
+                continue
 
-            item_text, inline_variant_text = self._split_inline_variant(content)
-
-            inline_variants: list[str] = []
-            if inline_variant_text:
-                inline_variants, variant_error = self._resolve_variant_values(
-                    inline_variant_text
-                )
-                if variant_error:
-                    return self._failure(variant_error, tour_id, event)
-
-            item_id, match_error = self._match_item_id(
-                item_text,
-                variant_hints=inline_variants,
-            )
+            item_text = re.sub(r"^・\s*", "", s)
+            item_text, inline_variant = self._split_inline_variant(item_text)
+            item_id, match_error = self._match_item_id(item_text)
 
             if not item_id:
-                return self._failure(
-                    match_error or f"商品を特定できない: {item_text}",
-                    tour_id,
-                    event,
-                )
+                return self._failure(match_error or f"商品を特定できない: {item_text}", tour_id, event)
 
             official_name = self.goods.loc[
                 self.goods["item_id"] == item_id, "item_name"
@@ -294,15 +263,13 @@ class SoldOutPostParser:
                 self.goods.loc[self.goods["item_id"] == item_id, "variant"]
             )
 
-            if inline_variants:
-                for variant in inline_variants:
-                    if variant not in allowed:
-                        return self._failure(
-                            f"variantを特定できない: {inline_variant_text}",
-                            tour_id,
-                            event,
-                        )
-                    parsed.append(ParsedSoldOutItem(item_id, official_name, variant))
+            if inline_variant:
+                variant = self.variant_aliases.get(normalize_variant(inline_variant))
+                if not variant or variant not in allowed:
+                    return self._failure(
+                        f"variantを特定できない: {inline_variant}", tour_id, event
+                    )
+                parsed.append(ParsedSoldOutItem(item_id, official_name, variant))
                 pending = None
             elif allowed == {""}:
                 parsed.append(ParsedSoldOutItem(item_id, official_name, ""))
@@ -599,42 +566,31 @@ class SoldOutPostParser:
         """
         完売対象の商品行を抽出する。
 
-        - 「完売情報」見出しがある場合:
-          見出しより後ろは商品セクションとみなし、箇条書き記号なしの
-          商品名も候補として扱う。
-        - 見出しがなく「本日分完売」だけの場合:
-          投稿タイトル等を商品と誤認しないよう、一般的な箇条書き記号で
-          始まる行と「種類：/サイズ：」行だけを対象にする。
-
-        「・」以外に ● / ○ / ■ / - なども受け付ける。
+        「【完売情報】」は任意。
+        見出しがある場合はその後ろを、ない場合は投稿全体を対象にし、
+        「本日分完売」より前の「・商品名」および「種類：/サイズ：」行だけを
+        後段の解析対象として返す。
         """
-        raw_lines = str(text).splitlines()
-        heading_index = next(
-            (i for i, line in enumerate(raw_lines) if "完売情報" in line),
-            None,
-        )
-        has_heading = heading_index is not None
-        candidate_lines = raw_lines[heading_index + 1 :] if has_heading else raw_lines
+        if "【完売情報】" in text:
+            target = text.split("【完売情報】", 1)[1]
+        else:
+            target = text
 
-        extracted: list[str] = []
-        for line in candidate_lines:
+        for stop in ["本日分完売", "ありがとうございます"]:
+            if stop in target:
+                target = target.split(stop, 1)[0]
+
+        extracted = []
+        for line in target.splitlines():
             stripped = line.strip()
             if not stripped:
                 continue
 
-            if "本日分完売" in stripped or "ありがとうございます" in stripped:
-                break
-
-            content = re.sub(BULLET_PREFIX_RE, "", stripped).strip()
-            is_variant_line = bool(
-                re.match(r"^(種類|サイズ)\s*[:：]", content, flags=re.I)
-            )
-
-            if has_heading:
-                # Within the explicit SOLD OUT section, unbulleted item names are
-                # also allowed. Unknown lines will still fail safely downstream.
-                extracted.append(stripped)
-            elif re.match(BULLET_PREFIX_RE, stripped) or is_variant_line:
+            if stripped.startswith("・") or re.match(
+                r"^(種類|サイズ)\s*[:：]",
+                stripped,
+                flags=re.I,
+            ):
                 extracted.append(stripped)
 
         return extracted
@@ -648,67 +604,20 @@ class SoldOutPostParser:
             return m.group(1), m.group(2)
         return text, None
 
-    def _resolve_variant_values(
-        self,
-        value: str,
-    ) -> tuple[list[str], str | None]:
-        """Resolve one or more variants written in a single field.
-
-        Examples:
-          筒井/竹野
-          竹野世梛・八神遼介
-          M/L
-        """
-        raw = normalize_text(value)
-        parts = [
-            part.strip()
-            for part in re.split(r"\s*(?:/|／|・|、|,|，|&|＆)\s*", raw)
-            if part.strip()
-        ]
-        if not parts:
-            return [], f"variantを特定できない: {value}"
-
-        resolved: list[str] = []
-        for part in parts:
-            variant = self.variant_aliases.get(normalize_variant(part))
-            if not variant:
-                return [], f"variantを特定できない: {part}"
-            if variant not in resolved:
-                resolved.append(variant)
-
-        return resolved, None
-
-    def _match_item_id(
-        self,
-        item_text: str,
-        variant_hints: list[str] | None = None,
-    ) -> tuple[str | None, str | None]:
+    def _match_item_id(self, item_text: str) -> tuple[str | None, str | None]:
         """
         Matching order:
         1) normalized exact official/alias match
-        2) if multiple item candidates exist and one or more inline variants are present,
-           use variant compatibility to narrow candidates
-        3) controlled unique substring/suffix match
-        4) if multiple candidates still remain, stop as ambiguous
-
-        Example:
-          タオル（筒井）
-        "タオル" alone matches both the member-specific FRESHest!! towel
-        and the variant-less Fight!! towel. "筒井" is only a valid variant
-        of the member-specific towel, so that product can be selected safely.
-
-        "タオル" without a member remains ambiguous.
+        2) controlled unique substring/suffix match
+        3) if multiple candidates remain, stop as ambiguous
         """
         normalized = normalize_item_text(item_text)
 
         exact = self.item_aliases.get(normalized, set())
-        resolved = self._resolve_item_candidates(
-            item_text,
-            exact,
-            variant_hints,
-        )
-        if resolved is not None:
-            return resolved
+        if len(exact) == 1:
+            return next(iter(exact)), None
+        if len(exact) > 1:
+            return None, self._ambiguous_reason(item_text, exact)
 
         candidates: set[str] = set()
         for alias, item_ids in self.item_aliases.items():
@@ -717,58 +626,12 @@ class SoldOutPostParser:
             if normalized.endswith(alias) or alias.endswith(normalized):
                 candidates.update(item_ids)
 
-        resolved = self._resolve_item_candidates(
-            item_text,
-            candidates,
-            variant_hints,
-        )
-        if resolved is not None:
-            return resolved
-
-        return None, f"商品を特定できない: {item_text}"
-
-    def _resolve_item_candidates(
-        self,
-        item_text: str,
-        candidates: set[str],
-        variant_hints: list[str] | None,
-    ) -> tuple[str | None, str | None] | None:
         if len(candidates) == 1:
             return next(iter(candidates)), None
-
-        if len(candidates) > 1 and variant_hints:
-            compatible: set[str] = set()
-
-            for item_id in candidates:
-                allowed = set(
-                    self.goods.loc[
-                        self.goods["item_id"] == item_id,
-                        "variant",
-                    ]
-                )
-                if all(variant in allowed for variant in variant_hints):
-                    compatible.add(item_id)
-
-            if len(compatible) == 1:
-                return next(iter(compatible)), None
-
-            if len(compatible) > 1:
-                return (
-                    None,
-                    self._ambiguous_reason(
-                        item_text,
-                        compatible,
-                    ),
-                )
-
-            # Variant information was present but did not safely narrow the
-            # candidates to one item. Preserve the ambiguous result.
-            return None, self._ambiguous_reason(item_text, candidates)
-
         if len(candidates) > 1:
             return None, self._ambiguous_reason(item_text, candidates)
 
-        return None
+        return None, f"商品を特定できない: {item_text}"
 
     def _ambiguous_reason(self, item_text: str, item_ids: set[str]) -> str:
         labels = []
