@@ -41,6 +41,16 @@ def init_db() -> None:
             WHERE status = 'UNKNOWN'
             """
         )
+
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS x_sync_state (
+                scope_key TEXT PRIMARY KEY,
+                last_post_id TEXT NOT NULL,
+                updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )
+            """
+        )
         conn.commit()
 
 
@@ -179,4 +189,60 @@ def apply_parsed_sold_out(
                     source_post_url,
                 ),
             )
+        conn.commit()
+
+
+
+def get_x_sync_cursor(scope_key: str) -> str | None:
+    with get_connection() as conn:
+        row = conn.execute(
+            """
+            SELECT last_post_id
+            FROM x_sync_state
+            WHERE scope_key = ?
+            """,
+            (scope_key,),
+        ).fetchone()
+
+    if row is None:
+        return None
+    return str(row["last_post_id"])
+
+
+def set_x_sync_cursor(
+    scope_key: str,
+    last_post_id: str,
+) -> None:
+    normalized = str(last_post_id or "").strip()
+    if not normalized.isdigit():
+        raise ValueError("last_post_id must be a numeric X Post ID")
+
+    with get_connection() as conn:
+        conn.execute(
+            """
+            INSERT INTO x_sync_state (
+                scope_key,
+                last_post_id,
+                updated_at
+            )
+            VALUES (?, ?, CURRENT_TIMESTAMP)
+            ON CONFLICT(scope_key)
+            DO UPDATE SET
+                last_post_id = excluded.last_post_id,
+                updated_at = CURRENT_TIMESTAMP
+            """,
+            (scope_key, normalized),
+        )
+        conn.commit()
+
+
+def reset_x_sync_cursor(scope_key: str) -> None:
+    with get_connection() as conn:
+        conn.execute(
+            """
+            DELETE FROM x_sync_state
+            WHERE scope_key = ?
+            """,
+            (scope_key,),
+        )
         conn.commit()
