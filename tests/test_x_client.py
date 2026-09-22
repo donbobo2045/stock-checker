@@ -22,25 +22,16 @@ class FakeSession:
         return self.responses.pop(0)
 
 
-def test_get_recent_posts_resolves_username_then_fetches_timeline():
+def test_search_recent_posts_uses_server_side_query():
     session = FakeSession(
         [
-            FakeResponse(
-                200,
-                {
-                    "data": {
-                        "id": "12345",
-                        "username": "SDE_STARDUSTBIN",
-                    }
-                },
-            ),
             FakeResponse(
                 200,
                 {
                     "data": [
                         {
                             "id": "999",
-                            "text": "【完売情報】 テスト",
+                            "text": "#ICEx\n【完売情報】\n・うちわ（筒井）",
                             "created_at": "2026-09-22T09:00:00.000Z",
                         }
                     ]
@@ -50,8 +41,13 @@ def test_get_recent_posts_resolves_username_then_fetches_timeline():
     )
     client = XApiClient("secret", session=session)
 
-    posts = client.get_recent_posts(
-        "@SDE_STARDUSTBIN",
+    query = (
+        "from:SDE_STARDUSTBIN "
+        "(ICEx OR #ICEx) 完売 -is:retweet"
+    )
+    posts = client.search_recent_posts(
+        query,
+        username="@SDE_STARDUSTBIN",
         max_results=10,
     )
 
@@ -62,33 +58,48 @@ def test_get_recent_posts_resolves_username_then_fetches_timeline():
         "https://x.com/SDE_STARDUSTBIN/status/999"
     )
 
-    first_url, first_kwargs = session.calls[0]
-    assert first_url.endswith(
-        "/users/by/username/SDE_STARDUSTBIN"
-    )
-    assert first_kwargs["headers"]["Authorization"] == (
-        "Bearer secret"
-    )
-
-    second_url, second_kwargs = session.calls[1]
-    assert second_url.endswith("/users/12345/tweets")
-    assert second_kwargs["params"]["max_results"] == 10
-    assert second_kwargs["params"]["tweet.fields"] == "created_at"
+    assert len(session.calls) == 1
+    url, kwargs = session.calls[0]
+    assert url.endswith("/tweets/search/recent")
+    assert kwargs["headers"]["Authorization"] == "Bearer secret"
+    assert kwargs["params"]["query"] == query
+    assert kwargs["params"]["max_results"] == 10
+    assert kwargs["params"]["tweet.fields"] == "created_at"
 
 
-def test_max_results_is_clamped_to_x_api_range():
+def test_max_results_is_clamped_to_recent_search_range():
     session = FakeSession(
         [
-            FakeResponse(200, {"data": {"id": "12345"}}),
             FakeResponse(200, {"data": []}),
         ]
     )
     client = XApiClient("secret", session=session)
 
-    client.get_recent_posts("SDE_STARDUSTBIN", max_results=1)
+    client.search_recent_posts(
+        "from:SDE_STARDUSTBIN ICEx 完売",
+        username="SDE_STARDUSTBIN",
+        max_results=1,
+    )
 
-    _, kwargs = session.calls[1]
-    assert kwargs["params"]["max_results"] == 5
+    _, kwargs = session.calls[0]
+    assert kwargs["params"]["max_results"] == 10
+
+
+def test_empty_query_is_rejected_before_request():
+    session = FakeSession([])
+    client = XApiClient("secret", session=session)
+
+    try:
+        client.search_recent_posts(
+            "   ",
+            username="SDE_STARDUSTBIN",
+        )
+    except ValueError as exc:
+        assert "検索クエリが空" in str(exc)
+    else:
+        raise AssertionError("ValueError was not raised")
+
+    assert session.calls == []
 
 
 def test_401_becomes_human_readable_error():
@@ -103,10 +114,36 @@ def test_401_becomes_human_readable_error():
     client = XApiClient("secret", session=session)
 
     try:
-        client.get_user_by_username("SDE_STARDUSTBIN")
+        client.search_recent_posts(
+            "from:SDE_STARDUSTBIN ICEx 完売",
+            username="SDE_STARDUSTBIN",
+        )
     except XApiError as exc:
         assert "認証に失敗" in str(exc)
         assert "Unauthorized" in str(exc)
+    else:
+        raise AssertionError("XApiError was not raised")
+
+
+def test_402_becomes_credit_error():
+    session = FakeSession(
+        [
+            FakeResponse(
+                402,
+                {"detail": "credits depleted"},
+            )
+        ]
+    )
+    client = XApiClient("secret", session=session)
+
+    try:
+        client.search_recent_posts(
+            "from:SDE_STARDUSTBIN ICEx 完売",
+            username="SDE_STARDUSTBIN",
+        )
+    except XApiError as exc:
+        assert "クレジット残高がありません" in str(exc)
+        assert "credits depleted" in str(exc)
     else:
         raise AssertionError("XApiError was not raised")
 
@@ -122,7 +159,10 @@ def test_network_error_is_wrapped():
     )
 
     try:
-        client.get_user_by_username("SDE_STARDUSTBIN")
+        client.search_recent_posts(
+            "from:SDE_STARDUSTBIN ICEx 完売",
+            username="SDE_STARDUSTBIN",
+        )
     except XApiError as exc:
         assert "接続に失敗" in str(exc)
     else:
