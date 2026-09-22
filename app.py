@@ -264,7 +264,11 @@ def get_public_read_only() -> bool:
 
 
 public_read_only = get_public_read_only()
-runtime_enable_sales_end = DEFAULT_ENABLE_SALES_END_STATUS
+runtime_enable_sales_end = (
+    True
+    if public_read_only
+    else DEFAULT_ENABLE_SALES_END_STATUS
+)
 runtime_test_now = None
 
 init_db()
