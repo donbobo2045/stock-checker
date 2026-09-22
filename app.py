@@ -18,8 +18,11 @@ from database import (
     apply_parsed_sold_out,
     ensure_inventory_rows,
     get_inventory_for_session,
+    get_x_sync_cursor,
     init_db,
     reset_session,
+    reset_x_sync_cursor,
+    set_x_sync_cursor,
     update_status,
 )
 from parser import SoldOutPostParser
@@ -27,6 +30,12 @@ from search_logic import filter_goods_for_search
 from selection_logic import get_default_event_id, get_tour_id_for_event
 from x_client import XApiClient, XApiError
 from x_preview import IGNORED, PARSED, REVIEW, classify_parse_result
+from x_sync_logic import (
+    build_event_day_search_plan,
+    get_tour_event_dates,
+    is_full_event_day_recent_search_eligible,
+    newest_post_id,
+)
 from status_logic import (
     AUTO,
     AVAILABLE,
@@ -453,20 +462,124 @@ with st.sidebar:
         st.rerun()
 
 
-# ---- X API preview (Phase 10.1) ----
+# ---- X API preview (Phase 10.2) ----
 with st.expander(
-    "📡 X API取得テスト（Phase 10.1・自動反映なし）",
+    "📡 X API取得テスト（Phase 10.2・イベント日＋since_id）",
     expanded=False,
 ):
     st.caption(
         "@SDE_STARDUSTBIN のうち、本文にICExと完売を含む"
-        "直近7日間のポストだけをX API検索で取得し、"
-        "既存parserで解析します。"
-        "この画面から在庫DBへの自動反映は行いません。"
+        "ポストだけを対象にします。"
+        "イベント日単位で取得し、2回目以降はsince_idで"
+        "増分取得できます。在庫DBへの自動反映はまだ行いません。"
     )
 
     x_bearer_token = get_x_bearer_token()
     st.caption(f"検索条件：`{X_SEARCH_QUERY}`")
+
+    actual_now_jst = datetime.now(ZoneInfo("Asia/Tokyo"))
+    x_event_dates = get_tour_event_dates(
+        events,
+        selected_tour_id,
+    )
+
+    recent_rehearsal_dates = [
+        event_date
+        for event_date in x_event_dates
+        if is_full_event_day_recent_search_eligible(
+            event_date,
+            actual_now_jst,
+        )
+    ]
+
+    x_mode = st.radio(
+        "取得モード",
+        [
+            "リハーサル（過去イベント日）",
+            "本番当日",
+        ],
+        key="x_sync_mode",
+    )
+
+    x_fetch_enabled = bool(x_bearer_token)
+    x_event_date = None
+    x_cutoff = None
+    x_scope = None
+
+    if x_mode == "リハーサル（過去イベント日）":
+        if not recent_rehearsal_dates:
+            st.warning(
+                "Recent Searchでイベント日全体を取得できる"
+                "過去公演がありません。"
+            )
+            x_fetch_enabled = False
+        else:
+            x_event_date = st.selectbox(
+                "リハーサル対象日",
+                recent_rehearsal_dates,
+                index=len(recent_rehearsal_dates) - 1,
+                key="x_rehearsal_event_date",
+            )
+
+            rehearsal_cutoff_time = st.time_input(
+                "仮想の取得終了時刻",
+                value=datetime.strptime(
+                    "15:00",
+                    "%H:%M",
+                ).time(),
+                step=60,
+                key="x_rehearsal_cutoff_time",
+                help=(
+                    "例：まず15:00で取得してsince_idを保存し、"
+                    "次に18:00へ進めると増分取得を試せます。"
+                ),
+            )
+
+            x_cutoff = datetime.combine(
+                datetime.fromisoformat(
+                    x_event_date
+                ).date(),
+                rehearsal_cutoff_time,
+                tzinfo=ZoneInfo("Asia/Tokyo"),
+            )
+            x_scope = (
+                f"rehearsal:{selected_tour_id}:"
+                f"{x_event_date}"
+            )
+    else:
+        today_iso = actual_now_jst.date().isoformat()
+        if today_iso not in x_event_dates:
+            st.info(
+                f"今日は対象ツアーのイベント日ではありません。"
+                f"現在日：{today_iso}"
+            )
+            next_dates = [
+                d for d in x_event_dates
+                if d > today_iso
+            ]
+            if next_dates:
+                st.caption(
+                    f"次のイベント日：{next_dates[0]}"
+                )
+            x_fetch_enabled = False
+        else:
+            x_event_date = today_iso
+            x_cutoff = actual_now_jst
+            x_scope = (
+                f"preview-live:{selected_tour_id}:"
+                f"{x_event_date}"
+            )
+            st.success(
+                f"本番当日モード：{x_event_date} "
+                f"{actual_now_jst.strftime('%H:%M:%S')} JST"
+            )
+
+    if not x_bearer_token:
+        st.info(
+            "X_BEARER_TOKEN が未設定です。"
+            "ローカルでは .streamlit/secrets.toml、"
+            "Streamlit Community CloudではApp settingsのSecretsに設定してください。"
+        )
 
     x_max_results = st.number_input(
         "1回の検索で取得する最大件数",
@@ -477,26 +590,86 @@ with st.expander(
         key="x_api_max_results",
     )
 
-    if not x_bearer_token:
-        st.info(
-            "X_BEARER_TOKEN が未設定です。"
-            "ローカルでは .streamlit/secrets.toml、"
-            "Streamlit Community CloudではApp settingsのSecretsに設定してください。"
-        )
+    x_cursor = (
+        get_x_sync_cursor(x_scope)
+        if x_scope
+        else None
+    )
+
+    x_plan = None
+    if x_event_date and x_cutoff:
+        try:
+            x_plan = build_event_day_search_plan(
+                x_event_date,
+                x_cutoff,
+                since_id=x_cursor,
+                timezone_name="Asia/Tokyo",
+            )
+        except ValueError as exc:
+            st.warning(str(exc))
+            x_fetch_enabled = False
+
+    if x_plan is not None:
+        if x_plan.mode == "initial":
+            st.write("**取得方式：** 初回イベント日取得")
+            st.caption(
+                f"start_time={x_plan.start_time} / "
+                f"end_time={x_plan.end_time}"
+            )
+        else:
+            st.write("**取得方式：** since_idによる増分取得")
+            st.caption(
+                f"since_id={x_plan.since_id} / "
+                f"end_time={x_plan.end_time}"
+            )
+
+    cursor_col1, cursor_col2 = st.columns(2)
+    with cursor_col1:
+        if x_cursor:
+            st.caption(f"保存済みsince_id：{x_cursor}")
+        else:
+            st.caption("保存済みsince_id：なし")
+
+    with cursor_col2:
+        if st.button(
+            "since_idをリセット",
+            disabled=not bool(x_cursor and x_scope),
+            key="reset_x_preview_cursor",
+            use_container_width=True,
+        ):
+            reset_x_sync_cursor(x_scope)
+            st.session_state.pop(
+                "x_preview_results",
+                None,
+            )
+            st.session_state.pop(
+                "x_cursor_candidate",
+                None,
+            )
+            st.session_state.pop(
+                "x_preview_scope",
+                None,
+            )
+            st.rerun()
 
     if st.button(
-        "条件に合うポストを取得・解析",
+        "このイベント日のポストを取得・解析",
         type="primary",
-        disabled=not bool(x_bearer_token),
+        disabled=not bool(x_fetch_enabled and x_plan),
         key="fetch_x_api_posts",
     ):
         try:
-            with st.spinner("X APIで条件一致ポストを検索しています..."):
+            with st.spinner(
+                "X APIでイベント日の条件一致ポストを検索しています..."
+            ):
                 x_client = XApiClient(x_bearer_token)
                 x_posts = x_client.search_recent_posts(
                     X_SEARCH_QUERY,
                     username=X_USERNAME,
                     max_results=int(x_max_results),
+                    start_time=x_plan.start_time,
+                    end_time=x_plan.end_time,
+                    since_id=x_plan.since_id,
                 )
 
                 preview_results = []
@@ -506,19 +679,67 @@ with st.expander(
                         {
                             "post": post,
                             "parsed_result": parsed_result,
-                            "category": classify_parse_result(parsed_result),
+                            "category": classify_parse_result(
+                                parsed_result
+                            ),
                         }
                     )
 
-                st.session_state["x_preview_results"] = preview_results
+                st.session_state["x_preview_results"] = (
+                    preview_results
+                )
+                st.session_state["x_cursor_candidate"] = (
+                    newest_post_id(
+                        [post.id for post in x_posts]
+                    )
+                )
+                st.session_state["x_preview_scope"] = (
+                    x_scope
+                )
+                st.session_state["x_preview_plan"] = (
+                    x_plan
+                )
         except (XApiError, ValueError) as exc:
-            st.session_state.pop("x_preview_results", None)
-            st.error(f"X API取得に失敗しました：{exc}")
+            st.session_state.pop(
+                "x_preview_results",
+                None,
+            )
+            st.session_state.pop(
+                "x_cursor_candidate",
+                None,
+            )
+            st.error(
+                f"X API取得に失敗しました：{exc}"
+            )
 
-    x_preview_results = st.session_state.get(
-        "x_preview_results",
-        [],
+    same_scope = (
+        st.session_state.get("x_preview_scope")
+        == x_scope
     )
+    x_preview_results = (
+        st.session_state.get(
+            "x_preview_results",
+            [],
+        )
+        if same_scope
+        else []
+    )
+    x_cursor_candidate = (
+        st.session_state.get(
+            "x_cursor_candidate"
+        )
+        if same_scope
+        else None
+    )
+
+    if (
+        same_scope
+        and "x_preview_results" in st.session_state
+        and not x_preview_results
+    ):
+        st.info(
+            "この取得範囲には条件一致の新規ポストがありませんでした。"
+        )
 
     if x_preview_results:
         parsed_count = sum(
@@ -552,17 +773,27 @@ with st.expander(
             }[category]
 
             with st.container(border=True):
-                st.markdown(f"**{label}**　Post ID: {post.id}")
+                st.markdown(
+                    f"**{label}**　Post ID: {post.id}"
+                )
                 if post.created_at:
-                    st.caption(f"投稿時刻：{post.created_at}")
-                st.markdown(f"[Xで元ポストを開く]({post.url})")
-                st.code(post.text, language=None)
+                    st.caption(
+                        f"投稿時刻：{post.created_at}"
+                    )
+                st.markdown(
+                    f"[Xで元ポストを開く]({post.url})"
+                )
+                st.code(
+                    post.text,
+                    language=None,
+                )
 
                 if category == PARSED:
                     st.write(
                         f"**対象物販セッション：** "
                         f"{parsed_result.sales_session_id}  "
-                        f"（{parsed_result.date} / {parsed_result.venue}）"
+                        f"（{parsed_result.date} / "
+                        f"{parsed_result.venue}）"
                     )
                     st.dataframe(
                         pd.DataFrame(
@@ -570,17 +801,52 @@ with st.expander(
                                 {
                                     "item_id": item.item_id,
                                     "商品名": item.item_name,
-                                    "variant": item.variant or "(なし)",
-                                    "判定": "SOLD_OUT候補",
+                                    "variant": (
+                                        item.variant
+                                        or "(なし)"
+                                    ),
+                                    "判定": (
+                                        "SOLD_OUT候補"
+                                    ),
                                 }
-                                for item in parsed_result.items
+                                for item
+                                in parsed_result.items
                             ]
                         ),
                         use_container_width=True,
                         hide_index=True,
                     )
                 else:
-                    st.caption(f"判定理由：{parsed_result.reason}")
+                    st.caption(
+                        f"判定理由："
+                        f"{parsed_result.reason}"
+                    )
+
+    if x_cursor_candidate and x_scope:
+        st.divider()
+        st.write(
+            f"**今回の最新Post ID候補：** "
+            f"{x_cursor_candidate}"
+        )
+        st.caption(
+            "ここで保存するのはX取得テスト用のsince_idだけです。"
+            "在庫ステータスは変更しません。"
+        )
+
+        if st.button(
+            "この取得位置をsince_idとして保存（テスト用）",
+            key="save_x_preview_cursor",
+            use_container_width=True,
+        ):
+            set_x_sync_cursor(
+                x_scope,
+                x_cursor_candidate,
+            )
+            st.success(
+                "since_idを保存しました。"
+                "次回はこのIDより新しいポストだけを取得します。"
+            )
+            st.rerun()
 
 
 # ---- Manual post parser / admin ----
