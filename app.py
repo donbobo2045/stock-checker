@@ -16,6 +16,7 @@ from config import (
 from dev_settings import build_virtual_now
 from database import (
     apply_parsed_sold_out,
+    apply_x_parsed_posts_and_advance_cursor,
     ensure_inventory_rows,
     get_inventory_for_session,
     get_x_sync_cursor,
@@ -462,16 +463,16 @@ with st.sidebar:
         st.rerun()
 
 
-# ---- X API preview (Phase 10.2) ----
+# ---- X API sync preview (Phase 10.3) ----
 with st.expander(
-    "📡 X API取得テスト（Phase 10.2・イベント日＋since_id）",
+    "📡 X API取得・在庫反映テスト（Phase 10.3）",
     expanded=False,
 ):
     st.caption(
         "@SDE_STARDUSTBIN のうち、本文にICExと完売を含む"
         "ポストだけを対象にします。"
         "イベント日単位で取得し、2回目以降はsince_idで"
-        "増分取得できます。在庫DBへの自動反映はまだ行いません。"
+        "増分取得します。解析成功分は確認後にSOLD_OUTへ反映できます。"
     )
 
     x_bearer_token = get_x_bearer_token()
@@ -566,7 +567,7 @@ with st.expander(
             x_event_date = today_iso
             x_cutoff = actual_now_jst
             x_scope = (
-                f"preview-live:{selected_tour_id}:"
+                f"live:{selected_tour_id}:"
                 f"{x_event_date}"
             )
             st.success(
@@ -585,7 +586,7 @@ with st.expander(
         "1回の検索で取得する最大件数",
         min_value=10,
         max_value=100,
-        value=10,
+        value=20,
         step=10,
         key="x_api_max_results",
     )
@@ -705,13 +706,35 @@ with st.expander(
                 preview_results = []
                 for post in x_posts:
                     parsed_result = parser.parse(post.text)
+                    category = classify_parse_result(
+                        parsed_result
+                    )
+
+                    # Safety gate: an API result is only auto-applicable when
+                    # the parser resolved it to the same tour/event date that
+                    # the X search is currently rehearsing or monitoring.
+                    if (
+                        category == PARSED
+                        and (
+                            parsed_result.tour_id
+                            != selected_tour_id
+                            or parsed_result.date
+                            != x_event_date
+                        )
+                    ):
+                        category = REVIEW
+                        parsed_result.reason = (
+                            "X取得対象とparser解析結果が不一致です。"
+                            f" 取得={selected_tour_id}/{x_event_date},"
+                            f" 解析={parsed_result.tour_id}/"
+                            f"{parsed_result.date}"
+                        )
+
                     preview_results.append(
                         {
                             "post": post,
                             "parsed_result": parsed_result,
-                            "category": classify_parse_result(
-                                parsed_result
-                            ),
+                            "category": category,
                         }
                     )
 
@@ -858,25 +881,154 @@ with st.expander(
             f"**今回の最新Post ID候補：** "
             f"{x_cursor_candidate}"
         )
-        st.caption(
-            "ここで保存するのはX取得テスト用のsince_idだけです。"
-            "在庫ステータスは変更しません。"
-        )
 
-        if st.button(
-            "この取得位置をsince_idとして保存（テスト用）",
-            key="save_x_preview_cursor",
-            use_container_width=True,
-        ):
-            set_x_sync_cursor(
-                x_scope,
-                x_cursor_candidate,
+        x_parsed_rows = [
+            row
+            for row in x_preview_results
+            if row["category"] == PARSED
+        ]
+        x_review_rows = [
+            row
+            for row in x_preview_results
+            if row["category"] == REVIEW
+        ]
+
+        if x_review_rows:
+            st.warning(
+                "⚠️ 要確認の投稿が含まれるため、"
+                "SOLD_OUT反映とsince_id更新の同時確定は停止しています。"
+                "解析成功分だけを反映してもcursorは進めません。"
             )
+
+            if x_parsed_rows:
+                confirm_partial_apply = st.checkbox(
+                    "要確認投稿を飛ばさず、解析成功分だけ"
+                    "SOLD_OUTへ反映することを確認しました",
+                    key="confirm_x_partial_apply",
+                )
+                if st.button(
+                    "解析成功分だけSOLD_OUTへ反映"
+                    "（since_idは進めない）",
+                    disabled=not confirm_partial_apply,
+                    key="apply_x_parsed_without_cursor",
+                    use_container_width=True,
+                ):
+                    for row in x_parsed_rows:
+                        post = row["post"]
+                        parsed_result = row["parsed_result"]
+                        apply_parsed_sold_out(
+                            parsed_result.sales_session_id,
+                            [
+                                (item.item_id, item.variant)
+                                for item in parsed_result.items
+                            ],
+                            source_post_id=post.id,
+                            source_post_url=post.url,
+                        )
+                    st.success(
+                        "解析成功分をSQLiteへ反映しました。"
+                        "要確認投稿があるためsince_idは変更していません。"
+                    )
+                    st.rerun()
+        elif x_parsed_rows:
             st.success(
-                "since_idを保存しました。"
-                "次回はこのIDより新しいポストだけを取得します。"
+                "✅ 要確認投稿はありません。"
+                "解析成功分をSOLD_OUTへ反映し、"
+                "同時にsince_idを進められます。"
             )
-            st.rerun()
+
+            apply_preview_rows = []
+            for row in x_parsed_rows:
+                post = row["post"]
+                parsed_result = row["parsed_result"]
+                for item in parsed_result.items:
+                    apply_preview_rows.append(
+                        {
+                            "Post ID": post.id,
+                            "sales_session_id": (
+                                parsed_result.sales_session_id
+                            ),
+                            "item_id": item.item_id,
+                            "商品名": item.item_name,
+                            "variant": item.variant or "(なし)",
+                            "反映": "SOLD_OUT",
+                        }
+                    )
+
+            st.dataframe(
+                pd.DataFrame(apply_preview_rows),
+                use_container_width=True,
+                hide_index=True,
+            )
+
+            confirm_x_apply = st.checkbox(
+                "上記のX API解析結果を確認しました",
+                key="confirm_x_apply_and_cursor",
+            )
+
+            if st.button(
+                "SOLD_OUTへ反映 ＋ since_idを保存",
+                type="primary",
+                disabled=not confirm_x_apply,
+                key="apply_x_and_advance_cursor",
+                use_container_width=True,
+            ):
+                parsed_posts_payload = []
+                for row in x_parsed_rows:
+                    post = row["post"]
+                    parsed_result = row["parsed_result"]
+                    parsed_posts_payload.append(
+                        (
+                            parsed_result.sales_session_id,
+                            [
+                                (item.item_id, item.variant)
+                                for item in parsed_result.items
+                            ],
+                            post.id,
+                            post.url,
+                        )
+                    )
+
+                apply_x_parsed_posts_and_advance_cursor(
+                    x_scope,
+                    parsed_posts_payload,
+                    x_cursor_candidate,
+                )
+                st.success(
+                    "SOLD_OUT反映とsince_id保存を"
+                    "同一トランザクションで完了しました。"
+                )
+                st.session_state.pop(
+                    "x_preview_results",
+                    None,
+                )
+                st.session_state.pop(
+                    "x_cursor_candidate",
+                    None,
+                )
+                st.session_state.pop(
+                    "x_preview_scope",
+                    None,
+                )
+                st.rerun()
+        else:
+            st.info(
+                "今回の取得結果は対象外投稿のみです。"
+                "在庫DBは変更せず、cursorだけ進められます。"
+            )
+            if st.button(
+                "対象外投稿を処理済みとしてsince_idを保存",
+                key="advance_cursor_ignored_only",
+                use_container_width=True,
+            ):
+                set_x_sync_cursor(
+                    x_scope,
+                    x_cursor_candidate,
+                )
+                st.success(
+                    "在庫DBは変更せず、since_idだけ保存しました。"
+                )
+                st.rerun()
 
 
 # ---- Manual post parser / admin ----
