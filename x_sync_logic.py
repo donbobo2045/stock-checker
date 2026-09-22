@@ -11,7 +11,7 @@ import pandas as pd
 class EventDaySearchPlan:
     event_date: str
     start_time: str | None
-    end_time: str
+    end_time: str | None
     since_id: str | None
     mode: str
 
@@ -53,6 +53,10 @@ def build_event_day_search_plan(
       end_time   = cutoff
 
     X Recent Search does not allow start_time and since_id together.
+
+    For incremental reads we intentionally omit end_time as well. In live
+    operation, since_id alone naturally reads through the current Recent
+    Search upper bound. Rehearsal mode can apply its virtual cutoff locally.
     """
     event_day = _coerce_date(event_date)
     tz = ZoneInfo(timezone_name)
@@ -86,7 +90,11 @@ def build_event_day_search_plan(
     return EventDaySearchPlan(
         event_date=event_day.isoformat(),
         start_time=start_time,
-        end_time=_to_utc_rfc3339(effective_end),
+        end_time=(
+            None
+            if normalized_since_id
+            else _to_utc_rfc3339(effective_end)
+        ),
         since_id=normalized_since_id,
         mode=(
             "incremental"
