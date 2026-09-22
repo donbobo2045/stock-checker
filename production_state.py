@@ -204,3 +204,48 @@ def set_review_posts(
         return True
 
     return False
+
+
+
+def overlay_production_inventory(
+    local_inventory: dict[tuple[str, str], dict[str, Any]],
+    state: dict[str, Any],
+    sales_session_id: str,
+) -> dict[tuple[str, str], dict[str, Any]]:
+    """
+    Overlay committed production SOLD_OUT state on top of local SQLite rows.
+
+    Production SOLD_OUT is authoritative for the public app and must not be
+    downgraded by an AUTO/AVAILABLE value from the instance-local SQLite DB.
+    """
+    result = {
+        key: dict(value)
+        for key, value in local_inventory.items()
+    }
+
+    production_rows = get_production_inventory_for_session(
+        state,
+        sales_session_id,
+    )
+    for key, row in production_rows.items():
+        current = dict(
+            result.get(
+                key,
+                {
+                    "sales_session_id": sales_session_id,
+                    "item_id": key[0],
+                    "variant": key[1],
+                },
+            )
+        )
+        current.update(
+            {
+                "status": "SOLD_OUT",
+                "updated_at": row.get("updated_at"),
+                "source_post_id": row.get("source_post_id"),
+                "source_post_url": row.get("source_post_url"),
+            }
+        )
+        result[key] = current
+
+    return result
