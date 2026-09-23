@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 
@@ -128,6 +129,18 @@ def sync_live_event_once(
 
         if category == PARSED:
             parsed_count += 1
+            sold_out_at = None
+            if post.created_at:
+                sold_out_at = (
+                    datetime.fromisoformat(
+                        post.created_at.replace(
+                            "Z",
+                            "+00:00",
+                        )
+                    )
+                    .astimezone(ZoneInfo("Asia/Tokyo"))
+                    .isoformat()
+                )
             for item in parsed_result.items or []:
                 upsert_sold_out(
                     next_state,
@@ -139,6 +152,7 @@ def sync_live_event_once(
                     source_post_id=post.id,
                     source_post_url=post.url,
                     updated_at=updated_at,
+                    sold_out_at=sold_out_at,
                 )
         elif category == REVIEW:
             review_rows.append(
