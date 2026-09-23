@@ -127,6 +127,9 @@ def upsert_sold_out(
         if row_key != key:
             continue
 
+        if not sold_out_at:
+            desired["sold_out_at"] = row.get("sold_out_at")
+
         # Do not create a new commit every poll when the exact same post was
         # already applied.
         comparable_existing = dict(row)
