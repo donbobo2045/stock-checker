@@ -92,6 +92,10 @@ def test_live_sync_applies_sold_out_and_advances_cursor():
     assert summary.review == 0
     assert summary.cursor_after == post.id
     assert state["inventory"][0]["status"] == "SOLD_OUT"
+    assert (
+        state["inventory"][0]["sold_out_at"]
+        == "2026-09-23T13:30:00+09:00"
+    )
     assert state["sync"][
         "live:FRESHEST_2026:2026-09-23"
     ]["last_post_id"] == post.id
