@@ -703,6 +703,16 @@
     {
       "item_id": "freshest_uchiwa",
       "sales_session_id": "FRESHEST_TOKYO_0923",
+      "sold_out_at": "2026-09-23T17:15:32+09:00",
+      "source_post_id": "2102673203114176533",
+      "source_post_url": "https://x.com/SDE_STARDUSTBIN/status/2102673203114176533",
+      "status": "SOLD_OUT",
+      "updated_at": "2026-09-23T17:16:01.448411+09:00",
+      "variant": "竹野世梛"
+    },
+    {
+      "item_id": "freshest_uchiwa",
+      "sales_session_id": "FRESHEST_TOKYO_0923",
       "sold_out_at": "2026-09-23T17:11:37+09:00",
       "source_post_id": "2102672220371964216",
       "source_post_url": "https://x.com/SDE_STARDUSTBIN/status/2102672220371964216",
@@ -714,7 +724,7 @@
   "reviews": {},
   "sync": {
     "live:FRESHEST_2026:2026-09-23": {
-      "last_post_id": "2102672220371964216"
+      "last_post_id": "2102673203114176533"
     }
   },
   "version": 1
