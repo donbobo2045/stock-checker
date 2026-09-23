@@ -1,6 +1,15 @@
 name: X Auto Sync
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/x-auto-sync.yml"
+      - "x_client.py"
+      - "scripts/x_auto_sync.py"
+      - "production_sync.py"
+      - "x_sync_logic.py"
   workflow_dispatch:
     inputs:
       rehearsal_date:
@@ -27,7 +36,7 @@ permissions:
 
 concurrency:
   group: x-auto-sync
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   sync:
@@ -64,11 +73,12 @@ jobs:
 
           # Tokyo merchandise sales:
           # advance sales 13:00-16:00, plus doors and post-show sales.
-          # Use ~1 minute polling through a generous 21:30 buffer.
+          # Keep a rolling near-real-time watcher alive long enough to
+          # bridge delayed GitHub scheduled starts. A newer run replaces it.
           poll_count=1
           now_jst="$(TZ=Asia/Tokyo date +%H:%M)"
           if [[ "$now_jst" > "12:59" && "$now_jst" < "21:31" ]]; then
-            poll_count=6
+            poll_count=30
           fi
 
           echo "Polling mode: count=$poll_count, interval=50s, JST=$now_jst"
