@@ -1,637 +1,651 @@
 {
   "inventory": [
     {
-      "sales_session_id": "FRESHEST_AICHI_0821",
       "item_id": "freshest_card_case",
-      "variant": "中村旺太郎",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_AICHI_0821",
+      "sold_out_at": "2026-08-21T16:17:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-08-21T16:17:00+09:00"
+      "variant": "中村旺太郎"
     },
     {
-      "sales_session_id": "FRESHEST_AICHI_0821",
       "item_id": "freshest_card_case",
-      "variant": "八神遼介",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_AICHI_0821",
+      "sold_out_at": "2026-08-21T15:25:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-08-21T15:25:00+09:00"
+      "variant": "八神遼介"
     },
     {
-      "sales_session_id": "FRESHEST_AICHI_0821",
       "item_id": "freshest_card_case",
-      "variant": "山本龍人",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_AICHI_0821",
+      "sold_out_at": "2026-08-21T18:19:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-08-21T18:19:00+09:00"
+      "variant": "山本龍人"
     },
     {
-      "sales_session_id": "FRESHEST_AICHI_0821",
       "item_id": "freshest_card_case",
-      "variant": "志賀李玖",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_AICHI_0821",
+      "sold_out_at": "2026-08-21T16:08:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-08-21T16:08:00+09:00"
+      "variant": "志賀李玖"
     },
     {
-      "sales_session_id": "FRESHEST_AICHI_0821",
       "item_id": "freshest_card_case",
-      "variant": "竹野世梛",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_AICHI_0821",
+      "sold_out_at": "2026-08-21T15:25:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-08-21T15:25:00+09:00"
+      "variant": "竹野世梛"
     },
     {
-      "sales_session_id": "FRESHEST_AICHI_0821",
       "item_id": "freshest_card_case",
-      "variant": "筒井俊旭",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_AICHI_0821",
+      "sold_out_at": "2026-08-21T18:12:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-08-21T18:12:00+09:00"
+      "variant": "筒井俊旭"
     },
     {
-      "sales_session_id": "FRESHEST_AICHI_0821",
       "item_id": "freshest_card_case",
-      "variant": "阿久根温世",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_AICHI_0821",
+      "sold_out_at": "2026-08-21T17:55:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-08-21T17:55:00+09:00"
+      "variant": "阿久根温世"
     },
     {
-      "sales_session_id": "FRESHEST_AICHI_0821",
       "item_id": "freshest_tshirt",
-      "variant": "M",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_AICHI_0821",
+      "sold_out_at": "2026-08-21T17:50:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-08-21T17:50:00+09:00"
+      "variant": "M"
     },
     {
-      "sales_session_id": "FRESHEST_AICHI_0822",
       "item_id": "freshest_acrylic_stand",
-      "variant": "八神遼介",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_AICHI_0822",
+      "sold_out_at": "2026-08-22T13:16:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-08-22T13:16:00+09:00"
+      "variant": "八神遼介"
     },
     {
-      "sales_session_id": "FRESHEST_AICHI_0822",
       "item_id": "freshest_acrylic_stand",
-      "variant": "竹野世梛",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_AICHI_0822",
+      "sold_out_at": "2026-08-22T17:18:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-08-22T17:18:00+09:00"
+      "variant": "竹野世梛"
     },
     {
-      "sales_session_id": "FRESHEST_AICHI_0822",
       "item_id": "freshest_card_case",
-      "variant": "中村旺太郎",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_AICHI_0822",
+      "sold_out_at": "2026-08-22T12:42:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-08-22T12:42:00+09:00"
+      "variant": "中村旺太郎"
     },
     {
-      "sales_session_id": "FRESHEST_AICHI_0822",
       "item_id": "freshest_card_case",
-      "variant": "八神遼介",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_AICHI_0822",
+      "sold_out_at": "2026-08-22T10:52:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-08-22T10:52:00+09:00"
+      "variant": "八神遼介"
     },
     {
-      "sales_session_id": "FRESHEST_AICHI_0822",
       "item_id": "freshest_card_case",
-      "variant": "志賀李玖",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_AICHI_0822",
+      "sold_out_at": "2026-08-22T11:50:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-08-22T11:50:00+09:00"
+      "variant": "志賀李玖"
     },
     {
-      "sales_session_id": "FRESHEST_AICHI_0822",
       "item_id": "freshest_card_case",
-      "variant": "竹野世梛",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_AICHI_0822",
+      "sold_out_at": "2026-08-22T10:41:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-08-22T10:41:00+09:00"
+      "variant": "竹野世梛"
     },
     {
-      "sales_session_id": "FRESHEST_AICHI_0822",
       "item_id": "freshest_card_case",
-      "variant": "筒井俊旭",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_AICHI_0822",
+      "sold_out_at": "2026-08-22T16:45:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-08-22T16:45:00+09:00"
+      "variant": "筒井俊旭"
     },
     {
-      "sales_session_id": "FRESHEST_AICHI_0822",
       "item_id": "freshest_card_case",
-      "variant": "阿久根温世",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_AICHI_0822",
+      "sold_out_at": "2026-08-22T13:06:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-08-22T13:06:00+09:00"
+      "variant": "阿久根温世"
     },
     {
-      "sales_session_id": "FRESHEST_AICHI_0822",
       "item_id": "freshest_uchiwa",
-      "variant": "八神遼介",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_AICHI_0822",
+      "sold_out_at": "2026-08-22T17:04:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-08-22T17:04:00+09:00"
+      "variant": "八神遼介"
     },
     {
+      "item_id": "freshest_card_case",
       "sales_session_id": "FRESHEST_FUKUOKA_0829",
-      "item_id": "freshest_card_case",
-      "variant": "八神遼介",
-      "status": "SOLD_OUT",
+      "sold_out_at": "2026-08-29T15:10:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-08-29T15:10:00+09:00"
+      "variant": "八神遼介"
     },
     {
+      "item_id": "freshest_card_case",
       "sales_session_id": "FRESHEST_FUKUOKA_0829",
-      "item_id": "freshest_card_case",
-      "variant": "竹野世梛",
-      "status": "SOLD_OUT",
+      "sold_out_at": "2026-08-29T16:23:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-08-29T16:23:00+09:00"
+      "variant": "竹野世梛"
     },
     {
+      "item_id": "freshest_card_case",
       "sales_session_id": "FRESHEST_FUKUOKA_0830",
-      "item_id": "freshest_card_case",
-      "variant": "八神遼介",
-      "status": "SOLD_OUT",
+      "sold_out_at": "2026-08-30T10:29:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-08-30T10:29:00+09:00"
+      "variant": "八神遼介"
     },
     {
+      "item_id": "freshest_card_case",
       "sales_session_id": "FRESHEST_FUKUOKA_0830",
+      "sold_out_at": "2026-08-30T12:44:00+09:00",
+      "source_post_id": "",
+      "source_post_url": "",
+      "status": "SOLD_OUT",
+      "updated_at": "2026-09-23T10:41:00+09:00",
+      "variant": "竹野世梛"
+    },
+    {
+      "item_id": "freshest_acrylic_stand",
+      "sales_session_id": "FRESHEST_OSAKA_0918",
+      "sold_out_at": "2026-09-18T18:09:00+09:00",
+      "source_post_id": "",
+      "source_post_url": "",
+      "status": "SOLD_OUT",
+      "updated_at": "2026-09-23T10:41:00+09:00",
+      "variant": "中村旺太郎"
+    },
+    {
+      "item_id": "freshest_acrylic_stand",
+      "sales_session_id": "FRESHEST_OSAKA_0918",
+      "sold_out_at": "2026-09-18T18:00:00+09:00",
+      "source_post_id": "",
+      "source_post_url": "",
+      "status": "SOLD_OUT",
+      "updated_at": "2026-09-23T10:41:00+09:00",
+      "variant": "八神遼介"
+    },
+    {
+      "item_id": "freshest_acrylic_stand",
+      "sales_session_id": "FRESHEST_OSAKA_0918",
+      "sold_out_at": "2026-09-18T16:40:00+09:00",
+      "source_post_id": "",
+      "source_post_url": "",
+      "status": "SOLD_OUT",
+      "updated_at": "2026-09-23T10:41:00+09:00",
+      "variant": "山本龍人"
+    },
+    {
+      "item_id": "freshest_acrylic_stand",
+      "sales_session_id": "FRESHEST_OSAKA_0918",
+      "sold_out_at": "2026-09-18T16:40:00+09:00",
+      "source_post_id": "",
+      "source_post_url": "",
+      "status": "SOLD_OUT",
+      "updated_at": "2026-09-23T10:41:00+09:00",
+      "variant": "志賀李玖"
+    },
+    {
+      "item_id": "freshest_acrylic_stand",
+      "sales_session_id": "FRESHEST_OSAKA_0918",
+      "sold_out_at": "2026-09-18T18:00:00+09:00",
+      "source_post_id": "",
+      "source_post_url": "",
+      "status": "SOLD_OUT",
+      "updated_at": "2026-09-23T10:41:00+09:00",
+      "variant": "阿久根温世"
+    },
+    {
       "item_id": "freshest_card_case",
-      "variant": "竹野世梛",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_OSAKA_0918",
+      "sold_out_at": "2026-09-18T16:48:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
-      "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-08-30T12:44:00+09:00"
-    },
-    {
-      "sales_session_id": "FRESHEST_OSAKA_0918",
-      "item_id": "freshest_acrylic_stand",
-      "variant": "中村旺太郎",
       "status": "SOLD_OUT",
-      "source_post_id": "",
-      "source_post_url": "",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-18T18:09:00+09:00"
+      "variant": "八神遼介"
     },
     {
-      "sales_session_id": "FRESHEST_OSAKA_0918",
-      "item_id": "freshest_acrylic_stand",
-      "variant": "八神遼介",
-      "status": "SOLD_OUT",
-      "source_post_id": "",
-      "source_post_url": "",
-      "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-18T18:00:00+09:00"
-    },
-    {
-      "sales_session_id": "FRESHEST_OSAKA_0918",
-      "item_id": "freshest_acrylic_stand",
-      "variant": "山本龍人",
-      "status": "SOLD_OUT",
-      "source_post_id": "",
-      "source_post_url": "",
-      "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-18T16:40:00+09:00"
-    },
-    {
-      "sales_session_id": "FRESHEST_OSAKA_0918",
-      "item_id": "freshest_acrylic_stand",
-      "variant": "志賀李玖",
-      "status": "SOLD_OUT",
-      "source_post_id": "",
-      "source_post_url": "",
-      "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-18T16:40:00+09:00"
-    },
-    {
-      "sales_session_id": "FRESHEST_OSAKA_0918",
-      "item_id": "freshest_acrylic_stand",
-      "variant": "阿久根温世",
-      "status": "SOLD_OUT",
-      "source_post_id": "",
-      "source_post_url": "",
-      "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-18T18:00:00+09:00"
-    },
-    {
-      "sales_session_id": "FRESHEST_OSAKA_0918",
       "item_id": "freshest_card_case",
-      "variant": "八神遼介",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_OSAKA_0918",
+      "sold_out_at": "2026-09-18T16:38:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-18T16:48:00+09:00"
+      "variant": "志賀李玖"
     },
     {
-      "sales_session_id": "FRESHEST_OSAKA_0918",
       "item_id": "freshest_card_case",
-      "variant": "志賀李玖",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_OSAKA_0918",
+      "sold_out_at": "2026-09-18T16:38:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
-      "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-18T16:38:00+09:00"
-    },
-    {
-      "sales_session_id": "FRESHEST_OSAKA_0918",
-      "item_id": "freshest_card_case",
-      "variant": "竹野世梛",
       "status": "SOLD_OUT",
-      "source_post_id": "",
-      "source_post_url": "",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-18T16:38:00+09:00"
+      "variant": "竹野世梛"
     },
     {
-      "sales_session_id": "FRESHEST_OSAKA_0918",
       "item_id": "freshest_face_towel",
-      "variant": "八神遼介",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_OSAKA_0918",
+      "sold_out_at": "2026-09-18T17:59:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-18T17:59:00+09:00"
+      "variant": "八神遼介"
     },
     {
-      "sales_session_id": "FRESHEST_OSAKA_0918",
       "item_id": "freshest_face_towel",
-      "variant": "志賀李玖",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_OSAKA_0918",
+      "sold_out_at": "2026-09-18T16:37:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-18T16:37:00+09:00"
+      "variant": "志賀李玖"
     },
     {
-      "sales_session_id": "FRESHEST_OSAKA_0918",
       "item_id": "freshest_face_towel",
-      "variant": "竹野世梛",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_OSAKA_0918",
+      "sold_out_at": "2026-09-18T17:59:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-18T17:59:00+09:00"
+      "variant": "竹野世梛"
     },
     {
-      "sales_session_id": "FRESHEST_OSAKA_0918",
       "item_id": "freshest_face_towel",
-      "variant": "阿久根温世",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_OSAKA_0918",
+      "sold_out_at": "2026-09-18T16:37:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-18T16:37:00+09:00"
+      "variant": "阿久根温世"
     },
     {
-      "sales_session_id": "FRESHEST_OSAKA_0918",
       "item_id": "freshest_tshirt",
-      "variant": "M",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_OSAKA_0918",
+      "sold_out_at": "2026-09-18T17:42:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-18T17:42:00+09:00"
+      "variant": "M"
     },
     {
-      "sales_session_id": "FRESHEST_OSAKA_0918",
       "item_id": "freshest_uchiwa",
-      "variant": "竹野世梛",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_OSAKA_0918",
+      "sold_out_at": "2026-09-18T16:55:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-18T16:55:00+09:00"
+      "variant": "竹野世梛"
     },
     {
-      "sales_session_id": "FRESHEST_OSAKA_0918",
       "item_id": "freshest_uchiwa",
-      "variant": "筒井俊旭",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_OSAKA_0918",
+      "sold_out_at": "2026-09-18T17:45:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-18T17:45:00+09:00"
+      "variant": "筒井俊旭"
     },
     {
-      "sales_session_id": "FRESHEST_OSAKA_0918",
       "item_id": "freshest_uchiwa",
-      "variant": "阿久根温世",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_OSAKA_0918",
+      "sold_out_at": "2026-09-18T17:42:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-18T17:42:00+09:00"
+      "variant": "阿久根温世"
     },
     {
-      "sales_session_id": "FRESHEST_OSAKA_0918",
       "item_id": "icex_penlight_ver4",
-      "variant": "",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_OSAKA_0918",
+      "sold_out_at": "2026-09-18T17:42:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-18T17:42:00+09:00"
+      "variant": ""
     },
     {
-      "sales_session_id": "FRESHEST_OSAKA_0919",
       "item_id": "freshest_acrylic_stand",
-      "variant": "中村旺太郎",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_OSAKA_0919",
+      "sold_out_at": "2026-09-19T11:38:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-19T11:38:00+09:00"
+      "variant": "中村旺太郎"
     },
     {
-      "sales_session_id": "FRESHEST_OSAKA_0919",
       "item_id": "freshest_acrylic_stand",
-      "variant": "八神遼介",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_OSAKA_0919",
+      "sold_out_at": "2026-09-19T13:09:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-19T13:09:00+09:00"
+      "variant": "八神遼介"
     },
     {
-      "sales_session_id": "FRESHEST_OSAKA_0919",
       "item_id": "freshest_acrylic_stand",
-      "variant": "千田波空斗",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_OSAKA_0919",
+      "sold_out_at": "2026-09-19T11:37:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-19T11:37:00+09:00"
+      "variant": "千田波空斗"
     },
     {
-      "sales_session_id": "FRESHEST_OSAKA_0919",
       "item_id": "freshest_acrylic_stand",
-      "variant": "山本龍人",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_OSAKA_0919",
+      "sold_out_at": "2026-09-19T13:05:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-19T13:05:00+09:00"
+      "variant": "山本龍人"
     },
     {
-      "sales_session_id": "FRESHEST_OSAKA_0919",
       "item_id": "freshest_acrylic_stand",
-      "variant": "志賀李玖",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_OSAKA_0919",
+      "sold_out_at": "2026-09-19T11:44:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-19T11:44:00+09:00"
+      "variant": "志賀李玖"
     },
     {
-      "sales_session_id": "FRESHEST_OSAKA_0919",
       "item_id": "freshest_acrylic_stand",
-      "variant": "筒井俊旭",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_OSAKA_0919",
+      "sold_out_at": "2026-09-19T16:39:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-19T16:39:00+09:00"
+      "variant": "筒井俊旭"
     },
     {
-      "sales_session_id": "FRESHEST_OSAKA_0919",
       "item_id": "freshest_acrylic_stand",
-      "variant": "阿久根温世",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_OSAKA_0919",
+      "sold_out_at": "2026-09-19T11:44:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-19T11:44:00+09:00"
+      "variant": "阿久根温世"
     },
     {
-      "sales_session_id": "FRESHEST_OSAKA_0919",
       "item_id": "freshest_card_case",
-      "variant": "八神遼介",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_OSAKA_0919",
+      "sold_out_at": "2026-09-19T11:49:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-19T11:49:00+09:00"
+      "variant": "八神遼介"
     },
     {
-      "sales_session_id": "FRESHEST_OSAKA_0919",
       "item_id": "freshest_card_case",
-      "variant": "千田波空斗",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_OSAKA_0919",
+      "sold_out_at": "2026-09-19T17:00:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T11:55:00+09:00",
-      "sold_out_at": "2026-09-19T17:00:00+09:00"
+      "variant": "千田波空斗"
     },
     {
-      "sales_session_id": "FRESHEST_OSAKA_0919",
       "item_id": "freshest_card_case",
-      "variant": "志賀李玖",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_OSAKA_0919",
+      "sold_out_at": "2026-09-19T11:25:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-19T11:25:00+09:00"
+      "variant": "志賀李玖"
     },
     {
-      "sales_session_id": "FRESHEST_OSAKA_0919",
       "item_id": "freshest_card_case",
-      "variant": "竹野世梛",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_OSAKA_0919",
+      "sold_out_at": "2026-09-19T11:49:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-19T11:49:00+09:00"
+      "variant": "竹野世梛"
     },
     {
-      "sales_session_id": "FRESHEST_OSAKA_0919",
       "item_id": "freshest_face_towel",
-      "variant": "八神遼介",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_OSAKA_0919",
+      "sold_out_at": "2026-09-19T11:49:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-19T11:49:00+09:00"
+      "variant": "八神遼介"
     },
     {
-      "sales_session_id": "FRESHEST_OSAKA_0919",
       "item_id": "freshest_face_towel",
-      "variant": "千田波空斗",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_OSAKA_0919",
+      "sold_out_at": "2026-09-19T11:43:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-19T11:43:00+09:00"
+      "variant": "千田波空斗"
     },
     {
-      "sales_session_id": "FRESHEST_OSAKA_0919",
       "item_id": "freshest_face_towel",
-      "variant": "筒井俊旭",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_OSAKA_0919",
+      "sold_out_at": "2026-09-19T17:00:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T11:55:00+09:00",
-      "sold_out_at": "2026-09-19T17:00:00+09:00"
+      "variant": "筒井俊旭"
     },
     {
-      "sales_session_id": "FRESHEST_OSAKA_0919",
       "item_id": "freshest_random_trading_card",
-      "variant": "",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_OSAKA_0919",
+      "sold_out_at": "2026-09-19T16:45:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-19T16:45:00+09:00"
+      "variant": ""
     },
     {
-      "sales_session_id": "FRESHEST_OSAKA_0919",
       "item_id": "freshest_sticker_sheet",
-      "variant": "",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_OSAKA_0919",
+      "sold_out_at": "2026-09-19T11:49:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-19T11:49:00+09:00"
+      "variant": ""
     },
     {
-      "sales_session_id": "FRESHEST_OSAKA_0919",
       "item_id": "freshest_tshirt",
-      "variant": "L",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_OSAKA_0919",
+      "sold_out_at": "2026-09-19T11:43:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-19T11:43:00+09:00"
+      "variant": "L"
     },
     {
-      "sales_session_id": "FRESHEST_OSAKA_0919",
       "item_id": "freshest_tshirt",
-      "variant": "M",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_OSAKA_0919",
+      "sold_out_at": "2026-09-19T16:48:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-19T16:48:00+09:00"
+      "variant": "M"
     },
     {
-      "sales_session_id": "FRESHEST_OSAKA_0919",
       "item_id": "freshest_uchiwa",
-      "variant": "中村旺太郎",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_OSAKA_0919",
+      "sold_out_at": "2026-09-19T11:43:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-19T11:43:00+09:00"
+      "variant": "中村旺太郎"
     },
     {
-      "sales_session_id": "FRESHEST_OSAKA_0919",
       "item_id": "freshest_uchiwa",
-      "variant": "八神遼介",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_OSAKA_0919",
+      "sold_out_at": "2026-09-19T11:43:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-19T11:43:00+09:00"
+      "variant": "八神遼介"
     },
     {
-      "sales_session_id": "FRESHEST_OSAKA_0919",
       "item_id": "freshest_uchiwa",
-      "variant": "千田波空斗",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_OSAKA_0919",
+      "sold_out_at": "2026-09-19T11:43:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-19T11:43:00+09:00"
+      "variant": "千田波空斗"
     },
     {
-      "sales_session_id": "FRESHEST_OSAKA_0919",
       "item_id": "freshest_uchiwa",
-      "variant": "山本龍人",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_OSAKA_0919",
+      "sold_out_at": "2026-09-19T16:40:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-19T16:40:00+09:00"
+      "variant": "山本龍人"
     },
     {
-      "sales_session_id": "FRESHEST_OSAKA_0919",
       "item_id": "freshest_uchiwa",
-      "variant": "竹野世梛",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_OSAKA_0919",
+      "sold_out_at": "2026-09-19T16:52:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T11:55:00+09:00",
-      "sold_out_at": "2026-09-19T16:52:00+09:00"
+      "variant": "竹野世梛"
     },
     {
-      "sales_session_id": "FRESHEST_OSAKA_0919",
       "item_id": "freshest_uchiwa",
-      "variant": "筒井俊旭",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_OSAKA_0919",
+      "sold_out_at": "2026-09-19T11:52:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-19T11:52:00+09:00"
+      "variant": "筒井俊旭"
     },
     {
-      "sales_session_id": "FRESHEST_OSAKA_0919",
       "item_id": "icex_penlight_ver4",
-      "variant": "",
-      "status": "SOLD_OUT",
+      "sales_session_id": "FRESHEST_OSAKA_0919",
+      "sold_out_at": "2026-09-19T11:42:00+09:00",
       "source_post_id": "",
       "source_post_url": "",
+      "status": "SOLD_OUT",
       "updated_at": "2026-09-23T10:41:00+09:00",
-      "sold_out_at": "2026-09-19T11:42:00+09:00"
+      "variant": ""
+    },
+    {
+      "item_id": "freshest_card_case",
+      "sales_session_id": "FRESHEST_TOKYO_0923",
+      "sold_out_at": "2026-09-23T13:56:51+09:00",
+      "source_post_id": "2102623202610721144",
+      "source_post_url": "https://x.com/SDE_STARDUSTBIN/status/2102623202610721144",
+      "status": "SOLD_OUT",
+      "updated_at": "2026-09-23T14:22:30.919369+09:00",
+      "variant": "八神遼介"
     }
   ],
   "reviews": {},
-  "sync": {},
+  "sync": {
+    "live:FRESHEST_2026:2026-09-23": {
+      "last_post_id": "2102623202610721144"
+    }
+  },
   "version": 1
 }
