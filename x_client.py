@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 import requests
@@ -65,6 +66,31 @@ class XApiClient:
         normalized_start = str(start_time or "").strip() or None
         normalized_end = str(end_time or "").strip() or None
         normalized_since = str(since_id or "").strip() or None
+
+        # X Recent Search requires end_time to be at least 10 seconds
+        # behind request time. Clamp live cutoffs with extra margin so
+        # runner/network timing cannot cause intermittent HTTP 400 errors.
+        if normalized_end:
+            try:
+                end_dt = datetime.fromisoformat(
+                    normalized_end.replace("Z", "+00:00")
+                )
+            except ValueError:
+                end_dt = None
+
+            if end_dt is not None:
+                if end_dt.tzinfo is None:
+                    end_dt = end_dt.replace(tzinfo=timezone.utc)
+                latest_allowed = (
+                    datetime.now(timezone.utc)
+                    - timedelta(seconds=30)
+                )
+                if end_dt.astimezone(timezone.utc) > latest_allowed:
+                    normalized_end = (
+                        latest_allowed
+                        .replace(microsecond=0)
+                        .strftime("%Y-%m-%dT%H:%M:%SZ")
+                    )
 
         if normalized_start and normalized_since:
             raise ValueError(
