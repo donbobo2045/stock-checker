@@ -46,26 +46,54 @@ jobs:
       - name: Install dependencies
         run: python -m pip install -r requirements.txt
 
-      - name: Fetch and apply X sold-out posts
+      - name: Configure Git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Poll and apply X sold-out posts
+        shell: bash
         env:
           X_BEARER_TOKEN: ${{ secrets.X_BEARER_TOKEN }}
           X_TARGET_TOUR_ID: FRESHEST_2026
           X_REHEARSAL_DATE: ${{ inputs.rehearsal_date }}
           X_REHEARSAL_CUTOFF: ${{ inputs.rehearsal_cutoff }}
           X_DRY_RUN: ${{ inputs.dry_run }}
-        run: python scripts/x_auto_sync.py
-
-      - name: Commit production inventory when changed
-        shell: bash
         run: |
-          if git diff --quiet -- data/production_state.json; then
-            echo "No production state change."
-            exit 0
+          set -euo pipefail
+
+          # Tokyo merchandise sales:
+          # advance sales 13:00-16:00, plus doors and post-show sales.
+          # Use ~1 minute polling through a generous 21:30 buffer.
+          poll_count=1
+          now_jst="$(TZ=Asia/Tokyo date +%H:%M)"
+          if [[ "$now_jst" > "12:59" && "$now_jst" < "21:31" ]]; then
+            poll_count=6
           fi
 
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/production_state.json
-          git commit -m "Update live inventory from X"
-          git pull --rebase
-          git push
+          echo "Polling mode: count=$poll_count, interval=50s, JST=$now_jst"
+
+          for attempt in $(seq 1 "$poll_count"); do
+            echo "=== Poll $attempt/$poll_count ==="
+
+            # Pick up any repository update made since checkout.
+            if git diff --quiet; then
+              git pull --rebase
+            fi
+
+            python scripts/x_auto_sync.py
+
+            if ! git diff --quiet -- data/production_state.json; then
+              git add data/production_state.json
+              git commit -m "Update live inventory from X"
+              git pull --rebase
+              git push
+              echo "Production inventory pushed."
+            else
+              echo "No production state change."
+            fi
+
+            if [[ "$attempt" -lt "$poll_count" ]]; then
+              sleep 50
+            fi
+          done
