@@ -679,12 +679,22 @@
       "status": "SOLD_OUT",
       "updated_at": "2026-09-23T15:55:27.661682+09:00",
       "variant": "八神遼介"
+    },
+    {
+      "item_id": "freshest_uchiwa",
+      "sales_session_id": "FRESHEST_TOKYO_0923",
+      "sold_out_at": "2026-09-23T17:07:28+09:00",
+      "source_post_id": "2102671176099406033",
+      "source_post_url": "https://x.com/SDE_STARDUSTBIN/status/2102671176099406033",
+      "status": "SOLD_OUT",
+      "updated_at": "2026-09-23T17:08:18.164421+09:00",
+      "variant": "志賀李玖"
     }
   ],
   "reviews": {},
   "sync": {
     "live:FRESHEST_2026:2026-09-23": {
-      "last_post_id": "2102669268588655040"
+      "last_post_id": "2102671176099406033"
     }
   },
   "version": 1
