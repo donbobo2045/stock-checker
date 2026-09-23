@@ -224,6 +224,65 @@ def get_current_time(
     return test_now.astimezone(timezone)
 
 
+def format_sold_out_detail(
+    inventory_row: dict,
+    session: dict,
+) -> str | None:
+    raw_value = inventory_row.get("sold_out_at")
+    if not raw_value:
+        return None
+
+    try:
+        sold_out_at = datetime.fromisoformat(
+            str(raw_value).replace("Z", "+00:00")
+        )
+    except ValueError:
+        return None
+
+    timezone = ZoneInfo(session["timezone"])
+    if sold_out_at.tzinfo is None:
+        sold_out_at = sold_out_at.replace(
+            tzinfo=timezone
+        )
+    else:
+        sold_out_at = sold_out_at.astimezone(
+            timezone
+        )
+
+    sales_start_at = get_sales_start_at(session)
+    elapsed_minutes = int(
+        (
+            sold_out_at - sales_start_at
+        ).total_seconds()
+        // 60
+    )
+
+    if elapsed_minutes < 0:
+        elapsed_text = "販売開始前"
+    else:
+        hours, minutes = divmod(
+            elapsed_minutes,
+            60,
+        )
+        if hours and minutes:
+            elapsed_text = (
+                f"{hours}時間{minutes}分"
+            )
+        elif hours:
+            elapsed_text = f"{hours}時間"
+        else:
+            elapsed_text = f"{minutes}分"
+
+        elapsed_text = (
+            f"販売開始から{elapsed_text}"
+        )
+
+    return (
+        f"{sold_out_at.strftime('%H:%M')}完売"
+        f"（{elapsed_text}）"
+    )
+
+
 def get_x_bearer_token() -> str:
     """Return X API Bearer Token without exposing it in the UI."""
     env_value = os.getenv("X_BEARER_TOKEN", "").strip()
@@ -1398,6 +1457,18 @@ def render_inventory():
                     f"{EFFECTIVE_LABELS[effective]}"
                 )
 
+                if effective == SOLD_OUT:
+                    sold_out_detail = (
+                        format_sold_out_detail(
+                            inventory[key],
+                            session,
+                        )
+                    )
+                    if sold_out_detail:
+                        st.caption(
+                            sold_out_detail
+                        )
+
                 if not public_read_only:
                     def status_option_label(
                         option: str,
@@ -1510,6 +1581,11 @@ def render_inventory():
                             info[
                                 "source_post_url"
                             ]
+                        ),
+                        "sold_out_at": (
+                            info.get(
+                                "sold_out_at"
+                            )
                         ),
                     }
                 )
