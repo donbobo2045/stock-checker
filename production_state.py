@@ -92,6 +92,7 @@ def upsert_sold_out(
     source_post_id: str,
     source_post_url: str,
     updated_at: str,
+    sold_out_at: str | None = None,
 ) -> bool:
     inventory = state.setdefault("inventory", [])
     normalized_variant = str(variant or "")
@@ -110,6 +111,11 @@ def upsert_sold_out(
         "source_post_id": str(source_post_id),
         "source_post_url": str(source_post_url),
         "updated_at": str(updated_at),
+        "sold_out_at": (
+            str(sold_out_at)
+            if sold_out_at
+            else None
+        ),
     }
 
     for index, row in enumerate(inventory):
@@ -244,6 +250,7 @@ def overlay_production_inventory(
                 "updated_at": row.get("updated_at"),
                 "source_post_id": row.get("source_post_id"),
                 "source_post_url": row.get("source_post_url"),
+                "sold_out_at": row.get("sold_out_at"),
             }
         )
         result[key] = current
